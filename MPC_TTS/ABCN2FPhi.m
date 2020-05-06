@@ -9,7 +9,7 @@ q = size(C,1);
 
 F = [];
 for i = 1:N
-   F = [F;C*A^i] 
+   F = [F;C*A^i];
 end
 
 % phi
