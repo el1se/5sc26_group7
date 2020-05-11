@@ -6,7 +6,7 @@ Atank = 0.0154;         % [m^2]
 Hmax = 0.61;            % [m]
 Qmax = 0.1;             % [l/s]
 
-L = 0.05;               % [m]
+L = 0.1;               % [m]
 mu = 1.002;             % [Ns/m^2]
 rho = 1000;             % [kg/m^3]
 g = 9.81;               % [m/s^2]
@@ -15,9 +15,9 @@ g = 9.81;               % [m/s^2]
 v4 = 1;                 % [s]?
 v5 = 1;                 % [s]?
 % other things
-ksim = 250;
+ksim = 350;
 Ts = 1;
-N = 30;
+N = 20;
 %% model
 BmCT = [0.001/Atank 0 0 0;
         0 0.001/Atank 0 0;
@@ -41,7 +41,7 @@ q = size(Cm,1);
 
 Dm = zeros(q,m);
 %% constraints
-deltaumin = [-Qmax; -Qmax; -100; -100];
+deltaumin = [-Qmax; -Qmax; -100*10000000; -100*10000000];
 deltaumax = -deltaumin;
 umin  = zeros(4,1);
 umax  = [Qmax; Qmax; 100; 100];
@@ -51,20 +51,23 @@ ymax  = [zeros(3,1) + Hmax; Dvalve; Dvalve];
 %% reference How to design reference for valves?
 r = [zeros(q-2,ksim+N)+0.3; zeros(2,ksim+N)];
 %% Q & R
-Q = [0.001*eye(5) zeros(5,5);
-    zeros(5,5) eye(5)];
-Qm = eye(5);
+Q = [eye(3) zeros(3,2);
+        zeros(2,5)];
+Qm = [  eye(3)      zeros(3,2);
+        zeros(2,5)                              ];
 R = eye(4);
 
 %% state preparation
 X = zeros(n,ksim);
 Xaug = zeros(n+q,ksim);
 u = zeros(m,ksim);
-u0 = zeros(m,1);
 
-X(:,1) = [0; 0; 0;Dvalve;Dvalve];
+
+X(:,1) = [0; 0; 0;0.2*Dvalve;0.2*Dvalve];
 Xaug(:,1) = [zeros(n,1);X(1:q,1)];
 options_qp =  optimoptions('quadprog','Display','off');
+
+u0 = [0;0;X(4,1)/Dvalve*100;X(5,1)/Dvalve*100];
 
 for k = 1:ksim
     AmCT = dfdx(X(:,k));
@@ -81,7 +84,8 @@ for k = 1:ksim
 
     % integral model
     [~,P,~] = dlqr(Am,Bm,Qm,R);
-    [ Psi, Omega ] = QRPN2PsiOmega(C*Q*C',R,P,N );    
+%      P( abs(P) < 1e-9 ) = 0;
+    [ Psi, Omega ] = QRPN2PsiOmega(Q,R,P,N );    
     [Phi, Gamma] = ABCN2FPhi(A,B,C,N);
     G = 2*(Psi+Gamma'*Omega*Gamma);
     F = 2*Gamma'*Omega;
@@ -96,7 +100,7 @@ for k = 1:ksim
     if k >1
         [D,M,E,c] = DMEcIntegral(deltaumin,deltaumax,umin,umax,ymin,ymax,u(:,k-1),N);
     else
-        [D,M,E,c] = DMEcIntegral(deltaumin,deltaumax,umin,umax,ymin,ymax,zeros(m,1),N);
+        [D,M,E,c] = DMEcIntegral(deltaumin,deltaumax,umin,umax,ymin,ymax,u0,N);
     end
     
     L = M*Gamma+E;
