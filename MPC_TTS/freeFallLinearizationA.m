@@ -1,12 +1,36 @@
 function A = freeFallLinearizationA(x)
 global Atank v4 v5 g Dvalve S
-A = [   
-    -S*x(4)/Dvalve*(2^(1/2)*g)/(2*(g*(x(1) - x(3)))^(1/2))/Atank   0  S*x(4)/Dvalve*(2^(1/2)*g)/(2*(g*(x(1) - x(3)))^(1/2))/Atank -S/Dvalve*sqrt(2*g*(x(1)-x(3)))/Atank 0;
-    0 -S*x(5)/Dvalve*(2^(1/2)*g)/(2*(g*(x(2) - x(3)))^(1/2))/Atank S*x(5)/Dvalve*(2^(1/2)*g)/(2*(g*(x(2) - x(3)))^(1/2))/Atank 0 -S/Dvalve*sqrt(2*g*(x(2)-x(3)))/Atank;
-    S*x(4)/Dvalve*(2^(1/2)*g)/(2*(g*(x(1) - x(3)))^(1/2))/Atank S*x(5)/Dvalve*(2^(1/2)*g)/(2*(g*(x(2) - x(3)))^(1/2))/Atank -S*x(4)/Dvalve*(2^(1/2)*g)/(2*(g*(x(1) - x(3)))^(1/2))/Atank-S*x(5)/Dvalve*(2^(1/2)*g)/(2*(g*(x(2) - x(3)))^(1/2))/Atank S/Dvalve*sqrt(2*g*(x(1)-x(3)))/Atank S/Dvalve*sqrt(2*g*(x(2)-x(3)))/Atank;
-    0                       0                       0                                   -v4                                     0;
-    0                       0                       0                                   0                                       -v5
-    ];
-
+tol = 0.005;
+if (abs(x(3)-x(2)) < tol) && (abs(x(3)-x(1)) >= tol)
+    A = [   
+        -S*x(4)/Dvalve*g/sqrt(2*g*abs(x(1)-x(3)))/Atank    0    S*x(4)/Dvalve*g/sqrt(2*g*abs(x(1)-x(3)))/Atank     -sign(x(1)-x(3))*S/Dvalve*sqrt(2*g*abs(x(1)-x(3)))/Atank   0;
+        zeros(1,5);
+        S*x(4)/Dvalve*g/sqrt(2*g*abs(x(1)-x(3)))/Atank     0    -S*x(4)/Dvalve*g/sqrt(2*g*abs(x(1)-x(3)))/Atank    sign(x(1)-x(3))*S/Dvalve*sqrt(2*g*abs(x(1)-x(3)))/Atank    0;
+        0                       0                       0                                   -v4                                     0;
+        0                       0                       0                                   0                                       -v5
+        ];
+elseif (abs(x(3)-x(1)) < tol) && (abs(x(3)-x(2)) >= tol)
+    A = [   
+        zeros(1,5);
+        0                       -S*x(5)/Dvalve*g/sqrt(2*g*abs(x(2)-x(3)))/Atank    S*x(5)/Dvalve*g/sqrt(2*g*abs(x(2)-x(3)))/Atank     0    -sign(x(2)-x(3))*S/Dvalve*sqrt(2*g*abs(x(2)-x(3)))/Atank;
+        0                       S*x(5)/Dvalve*g/sqrt(2*g*abs(x(2)-x(3)))/Atank     -S*x(5)/Dvalve*g/sqrt(2*g*abs(x(2)-x(3)))/Atank    0    sign(x(2)-x(3))*S/Dvalve*sqrt(2*g*abs(x(2)-x(3)))/Atank;
+        0                       0                       0                                   -v4                                     0;
+        0                       0                       0                                   0                                       -v5
+        ];
+elseif (abs(x(3)-x(2)) < tol) && (abs(x(3)-x(1)) < tol)
+     A = [   
+        zeros(3,5);
+        0                       0                       0                                   -v4                                     0;
+        0                       0                       0                                   0                                       -v5
+        ];
+else
+    A = [   
+        -S*x(4)/Dvalve*g/sqrt(2*g*abs(x(1)-x(3)))/Atank     0                                                   sign(x(1)-x(3))*S*x(4)/Dvalve*g/sqrt(2*g*abs(x(1)-x(3)))/Atank                                                      -S/Dvalve*sqrt(2*g*abs(x(1)-x(3)))/Atank   0;
+        0                                                   -S*x(5)/Dvalve*g/sqrt(2*g*abs(x(2)-x(3)))/Atank     sign(x(2)-x(3))*S*x(5)/Dvalve*g/sqrt(2*g*abs(x(2)-x(3)))/Atank                                                      0                                       -S/Dvalve*sqrt(2*g*abs(x(2)-x(3)))/Atank;
+        S*x(4)/Dvalve*g/sqrt(2*g*abs(x(1)-x(3)))/Atank      S*x(5)/Dvalve*g/sqrt(2*g*abs(x(2)-x(3)))/Atank      -sign(x(1)-x(3))*S*x(4)/Dvalve*g/sqrt(2*g*abs(x(1)-x(3)))/Atank-sign(x(2)-x(3))*S*x(5)/Dvalve*g/sqrt(2*g*abs(x(2)-x(3)))/Atank      S/Dvalve*sqrt(2*g*abs(x(1)-x(3)))/Atank    S/Dvalve*sqrt(2*g*abs(x(2)-x(3)))/Atank;
+        0                       0                       0                                   -v4                                     0;
+        0                       0                       0                                   0                                       -v5
+        ];
+end
 end
 
