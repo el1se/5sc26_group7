@@ -9,8 +9,8 @@ L = 0.1;                % [m]
 mu = 1.002;             % [Ns/m^2]
 rho = 1000;             % [kg/m^3]
 % system constants (ID or whatever)
-v4 = 1;                 % [s]?
-v5 = 1;                 % [s]?
+v4 = 0.5;                 % [s]?
+v5 = 0.5;                 % [s]?
 
 % Constraints 
 Hmax = 0.61;            % [m]
@@ -35,7 +35,7 @@ q = size(Cm,1);
 
 Dm = zeros(q,m);
 %% constraints
-deltaumin = [-0.1*Qmax; -0.1*Qmax; -100; -100];
+deltaumin = [-0.1*Qmax; -0.1*Qmax; -inf; -inf];
 deltaumax = -deltaumin;
 umin  = zeros(4,1);
 umax  = [Qmax; Qmax; 100; 100];
