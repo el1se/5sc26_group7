@@ -35,7 +35,7 @@ q = size(Cm,1);
 
 Dm = zeros(q,m);
 %% constraints
-deltaumin = [-0.1*Qmax; -0.1*Qmax; -100*10000000; -100*10000000];
+deltaumin = [-0.1*Qmax; -0.1*Qmax; -100; -100];
 deltaumax = -deltaumin;
 umin  = zeros(4,1);
 umax  = [Qmax; Qmax; 100; 100];
