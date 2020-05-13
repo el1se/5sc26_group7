@@ -1,39 +1,32 @@
 clear all; close all; clc
 %% constants
+global Atank v4 v5 g Dvalve S rho mu L
 S = 5e-5;               % [m^2]
 Dvalve = sqrt(4*S);     % [m]
 Atank = 0.0154;         % [m^2]
-Hmax = 0.61;            % [m]
-Qmax = 0.1;             % [l/s]
-
-L = 0.1;               % [m]
+g = 9.81;               % [m/s^2]
+L = 0.1;                % [m]
 mu = 1.002;             % [Ns/m^2]
 rho = 1000;             % [kg/m^3]
-g = 9.81;               % [m/s^2]
-
 % system constants (ID or whatever)
 v4 = 1;                 % [s]?
 v5 = 1;                 % [s]?
+
+% Constraints 
+Hmax = 0.61;            % [m]
+Qmax = 0.1;             % [l/s]
+
 % other things
-ksim = 350;
+ksim = 200;
 Ts = 1;
-N = 20;
+N = 10;
 %% model
 BmCT = [0.001/Atank 0 0 0;
         0 0.001/Atank 0 0;
         0 0 0 0 ;
         0 0 0.01*v4*Dvalve 0;
         0 0 0 0.01*v5*Dvalve];
-frac = 128*mu*L*Atank;
-dfdx = @(x) [   
-    -pi*x(4)^4*rho*g/frac   0                       pi*x(4)^4*rho*g/frac                -pi*4*x(4)^3*rho*g*(x(1)-x(3))/frac     0;
-    0                       -pi*x(5)^4*rho*g/frac   pi*x(5)^4*rho*g/frac                0                                       pi*4*x(5)^3*rho*g*(x(3)-x(2))/frac;
-    pi*x(4)^4*rho*g/frac    pi*x(5)^4*rho*g/frac    -pi*(x(5)^4+x(4)^4)*rho*g/frac      4*pi*x(4)^3*rho*(x(1)-x(3))/frac        -4*pi*x(5)^3*rho*(x(3)-x(2))/frac;
-    0                       0                       0                                   -v4                                     0;
-    0                       0                       0                                   0                                       -v5
-    ];
-
- Cm = eye(5);
+Cm = eye(5);
 
 m = size(BmCT,2);
 n = size(BmCT,1);
@@ -41,7 +34,7 @@ q = size(Cm,1);
 
 Dm = zeros(q,m);
 %% constraints
-deltaumin = [-Qmax; -Qmax; -100*10000000; -100*10000000];
+deltaumin = [-0.2*Qmax; -0.2*Qmax; -100*10000000; -100*10000000];
 deltaumax = -deltaumin;
 umin  = zeros(4,1);
 umax  = [Qmax; Qmax; 100; 100];
@@ -63,14 +56,18 @@ Xaug = zeros(n+q,ksim);
 u = zeros(m,ksim);
 
 
-X(:,1) = [0; 0; 0;0.2*Dvalve;0.2*Dvalve];
+X(:,1) = [0.01; 0.01; 0;0.2*Dvalve;0.2*Dvalve];
 Xaug(:,1) = [zeros(n,1);X(1:q,1)];
 options_qp =  optimoptions('quadprog','Display','off');
 
 u0 = [0;0;X(4,1)/Dvalve*100;X(5,1)/Dvalve*100];
 
 for k = 1:ksim
-    AmCT = dfdx(X(:,k));
+    if ((abs(X(3,k)-X(1,k)) < 1e-5) || (abs(X(3,k)-X(2,k)) < 1e-5))
+        error('ERROR: liquid level of tank 1 or 2 to close to liquid level of tank 3, cannot evaluate jacobian')
+    else
+        AmCT = freeFallLinearizationA(X(:,k));
+    end
     sysCT = ss(AmCT,BmCT,Cm,Dm);
     sysDT = c2d(sysCT,Ts);
     Am = sysDT.A;
@@ -123,22 +120,30 @@ t = 0:Ts:(size(X,2)-1)*Ts;
 figure(1); clf;
 subplot(2,2,1)
 hold on;
-plot(t,X(1,:));plot(t,X(2,:));plot(t,X(3,:));
-legend('Water level tank 1','Water level tank 2','Water level tank 3');
+plot(t,X(1,:),'LineWidth',1.5);plot(t,X(2,:),'LineWidth',1.5);plot(t,X(3,:),'LineWidth',1.5);
+legend('Tank 1','Tank 2','Tank 3');
 axis([-0.1 t(end) -0.01 0.7])
+xlabel('Time [s]');
+ylabel('Water level [m]');
 subplot(2,2,2);
 hold on;
-plot(t,X(4,:));plot(t,X(5,:));
-legend('Valve diameter 1','Valve diameter 2')
-axis([-0.1 t(end) 0 0.015])
+plot(t,X(4,:),'LineWidth',1.5);plot(t,X(5,:),'LineWidth',1.5);
+legend('Valve 1','Valve 2')
+axis([-0.1 t(end) 0 0.019])
+xlabel('Time [s]');
+ylabel('Diameter connecting pipe [m]');
 subplot(2,2,3);
 hold on;
-plot(t(1:end-1),u(1,:));plot(t(1:end-1),u(2,:));
-legend('Pump flow 1','Pump flow 2')
+plot(t(1:end-1),u(1,:),'LineWidth',1.5);plot(t(1:end-1),u(2,:),'LineWidth',1.5);
+legend('Pump 1','Pump 2')
 axis([-0.1 t(end) 0 0.12])
+xlabel('Time [s]');
+ylabel('Pump volume flow input [l/s]');
 subplot(2,2,4);
 hold on;
-plot(t(1:end-1),u(3,:));plot(t(1:end-1),u(4,:));
-legend('valve input 1','valve input 2')
+plot(t(1:end-1),u(3,:),'LineWidth',1.5);plot(t(1:end-1),u(4,:),'LineWidth',1.5);
+legend('Valve 1','Valve 2')
+xlabel('Time [s]');
+ylabel('Valve input [%]');
 axis([-0.1 t(end) -105 105])
  
