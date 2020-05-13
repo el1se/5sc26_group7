@@ -34,7 +34,7 @@ q = size(Cm,1);
 
 Dm = zeros(q,m);
 %% constraints
-deltaumin = [-0.2*Qmax; -0.2*Qmax; -100*10000000; -100*10000000];
+deltaumin = [-0.1*Qmax; -0.1*Qmax; -100*10000000; -100*10000000];
 deltaumax = -deltaumin;
 umin  = zeros(4,1);
 umax  = [Qmax; Qmax; 100; 100];
@@ -56,7 +56,7 @@ Xaug = zeros(n+q,ksim);
 u = zeros(m,ksim);
 
 
-X(:,1) = [0.01; 0.01; 0;0.2*Dvalve;0.2*Dvalve];
+X(:,1) = [0.01; 0.01; 0;0*Dvalve;0*Dvalve];
 Xaug(:,1) = [zeros(n,1);X(1:q,1)];
 options_qp =  optimoptions('quadprog','Display','off');
 
