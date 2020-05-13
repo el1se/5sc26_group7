@@ -14,6 +14,7 @@ subplot(2,2,3)
 plot(mdfData.Time,mdfData.ModelRoot_controller_controller_ModelRoot_ScopeHeightR_mm__In1)
 title('T2')
 %%
+figure()
 data = double(mdfData.ModelRoot_controller_controller_ModelRoot_ScopeHeightR_mm__In1);
 ddata = data(1:end-1)-data(2:end);
 plot(ddata)
