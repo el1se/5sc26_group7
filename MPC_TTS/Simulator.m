@@ -17,9 +17,9 @@ Hmax = 0.61;            % [m]
 Qmax = 0.1;             % [l/s]
 
 % other things
-ksim = 500;
-Ts = 1;
-N = 10;
+ksim = 300;
+Ts = 2;
+N = 25;
 %% model
 BmCT = [0.001/Atank 0 0 0;
         0 0.001/Atank 0 0;
@@ -35,7 +35,7 @@ q = size(Cm,1);
 
 Dm = zeros(q,m);
 %% constraints
-deltaumin = [-0.1*Qmax; -0.1*Qmax; -inf; -inf];
+deltaumin = [-0.1*Qmax; -0.1*Qmax; -100; -100];
 deltaumax = -deltaumin;
 umin  = zeros(4,1);
 umax  = [Qmax; Qmax; 100; 100];
@@ -49,7 +49,9 @@ Q = [eye(3) zeros(3,2);
         zeros(2,5)];
 Qm = [  eye(3)      zeros(3,2);
         zeros(2,5)                              ];
-R = eye(4);
+% R = eye(4);
+R = [eye(2) zeros(2,2);
+    zeros(2,2) 0.00001*eye(2)];
 
 %% state preparation
 Y = zeros(n,ksim);
@@ -57,13 +59,13 @@ Xaug = zeros(n+q,ksim);
 u = zeros(m,ksim);
 
 
-Y(:,1) = [0.01; 0.01; 0;0*Dvalve;0*Dvalve];
+Y(:,1) = [0; 0.28; 0;0*Dvalve;0*Dvalve];
 X2 = Y;
 Xaug(:,1) = [zeros(n,1);Y(1:q,1)];
 options_qp =  optimoptions('quadprog','Display','off');
 
 u0 = [0;0;Y(4,1)/Dvalve*100;Y(5,1)/Dvalve*100];
-
+Pprev = [15.9081147155710,2.96062907928527e-12,0.000675171321078397,-0.874073498351786,4.34237622311551e-05;2.96062907928527e-12,15.9081147155711,0.000675171327952177,4.34237625058848e-05,-0.874073498351258;0.000675171321078397,0.000675171327952177,155486.683787255,9999.99731184461,9999.99731184459;-0.874073498351786,4.34237625058848e-05,9999.99731184461,643.201217531435,643.148089872505;4.34237622311551e-05,-0.874073498351258,9999.99731184459,643.148089872505,643.201217531434];
 for k = 1:ksim
 
     AmCT = freeFallLinearizationA(Y(:,k));
@@ -116,6 +118,7 @@ for k = 1:ksim
     end
     
     Xaug(:,k+1) = A*Xaug(:,k) + B*deltaustar0k;
+
     Y(:,k+1) = C*Xaug(:,k+1);
     X2(:,k+1) = Am*X2(:,k) + Bm*u(:,k);
 %     Xhat(:,k+1) = Am*Xhat(:,k) + B*deltaustar0k+Lobs*(Y(:,k)) + Lobs*(Y(:,k)-C*Xhat(:,k));
