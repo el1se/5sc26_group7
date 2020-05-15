@@ -1,16 +1,19 @@
 Experiment 1:
+[Bart]
 
 Experiment 2:
+[Bart]
 
 Experiment 3:
+[Bart]
 
 Experiment 4:
-Valve positions experiment
+[Elise] Valve positions experiment
 
 Experiment 5:
-As experiment 3 showed: 2nd derivative was difficult to see, pumps are different,
+[Bart] As experiment 3 showed: 2nd derivative was difficult to see, pumps are different,
 so now different input signal and way more data will be generated. 
 An FRF will be attempted too.
 
 Experiment 6:
-Valve flow characteristics experiment
+[Elise] Valve flow characteristics experiment
