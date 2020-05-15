@@ -1,11 +1,14 @@
 Experiment 1:
 [Bart]
+* exploratory experiment which gave that outflow valve is closed
 
 Experiment 2:
 [Bart]
+* experiment that showed that you can add more data outputs to output file
 
 Experiment 3:
 [Bart]
+* valve 
 
 Experiment 4:
 [Elise] Valve positions experiment
@@ -14,6 +17,8 @@ Experiment 5:
 [Bart] As experiment 3 showed: 2nd derivative was difficult to see, pumps are different,
 so now different input signal and way more data will be generated. 
 An FRF will be attempted too.
+* ToRemoteLabs1-4 are specific input trajetories with stairs
+* ToRemoteLabs4 was uploaded and tested, rest is smaller and not tested
 
 Experiment 6:
 [Elise] Valve flow characteristics experiment
