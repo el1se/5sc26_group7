@@ -1,6 +1,6 @@
 clc; clear all; close all;
 
-% Filling left tank, opening valve between left/middle tank
+% Filling both tanks, opening both connecting valves
 
 
 %% Set variables
@@ -16,8 +16,8 @@ Ts = 0.01;
 
 % Time intervals
 T0 = 0:Ts:5;                        % initialize
-T1 = T0(end)+Ts:Ts:T0(end)+100;     % fill tank 1
-T2 = T1(end)+Ts:Ts:T1(end)+120;     % open valve 1-3 (LM)
+T1 = T0(end)+Ts:Ts:T0(end)+100;     % fill tanks
+T2 = T1(end)+Ts:Ts:T1(end)+120;     % open valves
 
 % Time
 t = [T0 T1 T2];
@@ -28,9 +28,9 @@ SetPumps = [zeros(1,length(T0))...
             zeros(1,length(T2))];
             
 SetPumpL = timeseries(SetPumps,t);
-SetPumpR = timeseries(zeros(1,length(t)),t);
+SetPumpR = timeseries(SetPumps,t);
 
-% Valve 3-2
+% Valves LM and MR
 Valve_open = [zeros(1,length([T0 T1]))...
               ones(1,length(T2))];
 
@@ -42,13 +42,13 @@ Valve_other = zeros(1,length(t));
 ValveLD_close = timeseries(Valve_other,t);
 ValveLM_close = timeseries(Valve_close,t);
 ValveMD_close = timeseries(Valve_other,t);
-ValveMR_close = timeseries(Valve_other,t);
+ValveMR_close = timeseries(Valve_close,t);
 ValveRD_close = timeseries(Valve_other,t);
 
 ValveLD_open = timeseries(Valve_other,t);
 ValveLM_open = timeseries(Valve_open,t);
 ValveMD_open = timeseries(Valve_other,t);
-ValveMR_open = timeseries(Valve_other,t);
+ValveMR_open = timeseries(Valve_open,t);
 ValveRD_open = timeseries(Valve_other,t);
 
 %% Check data
@@ -57,10 +57,10 @@ ValveRD_open = timeseries(Valve_other,t);
 figure(1)
 subplot(1,2,1);
 plot(t,SetPumps)
-xlabel('t'); ylabel('pump 1 input [L/s]')
+xlabel('t'); ylabel('pumps input [L/s]')
 subplot(1,2,2)
 plot(t,cumsum(SetPumps)*Ts/A)
-xlabel('t'); ylabel('level 1 [mm]')
+xlabel('t'); ylabel('levels 1&2 [mm]')
 level = trapz(t,SetPumps/A)
 
 % Valves
@@ -68,7 +68,7 @@ figure(2)
 plot(t,Valve_open,t,Valve_close)
 legend('open','close')
 xlabel('t'); ylabel('valve booleans')
-title('valveLM')
+title('valves LM&MR')
 
 %% Save data to .mat file
 
