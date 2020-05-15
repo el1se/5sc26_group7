@@ -1,39 +1,33 @@
 clear all; close all; clc
 %% constants
+global Atank v4 v5 g Dvalve S rho mu L
 S = 5e-5;               % [m^2]
 Dvalve = sqrt(4*S);     % [m]
 Atank = 0.0154;         % [m^2]
+g = 9.81;               % [m/s^2]
+L = 0.1;                % [m]
+mu = 1.002;             % [Ns/m^2]
+rho = 1000;             % [kg/m^3]
+% system constants (ID or whatever)
+v4 = 0.5;                 % [s]?
+v5 = 0.5;                 % [s]?
+
+% Constraints 
 Hmax = 0.61;            % [m]
 Qmax = 0.1;             % [l/s]
 
-L = 0.1;               % [m]
-mu = 1.002;             % [Ns/m^2]
-rho = 1000;             % [kg/m^3]
-g = 9.81;               % [m/s^2]
-
-% system constants (ID or whatever)
-v4 = 1;                 % [s]?
-v5 = 1;                 % [s]?
 % other things
-ksim = 350;
-Ts = 1;
-N = 20;
+ksim = 300;
+Ts = 2;
+N = 25;
 %% model
 BmCT = [0.001/Atank 0 0 0;
         0 0.001/Atank 0 0;
         0 0 0 0 ;
         0 0 0.01*v4*Dvalve 0;
         0 0 0 0.01*v5*Dvalve];
-frac = 128*mu*L*Atank;
-dfdx = @(x) [   
-    -pi*x(4)^4*rho*g/frac   0                       pi*x(4)^4*rho*g/frac                -pi*4*x(4)^3*rho*g*(x(1)-x(3))/frac     0;
-    0                       -pi*x(5)^4*rho*g/frac   pi*x(5)^4*rho*g/frac                0                                       pi*4*x(5)^3*rho*g*(x(3)-x(2))/frac;
-    pi*x(4)^4*rho*g/frac    pi*x(5)^4*rho*g/frac    -pi*(x(5)^4+x(4)^4)*rho*g/frac      4*pi*x(4)^3*rho*(x(1)-x(3))/frac        -4*pi*x(5)^3*rho*(x(3)-x(2))/frac;
-    0                       0                       0                                   -v4                                     0;
-    0                       0                       0                                   0                                       -v5
-    ];
+Cm = eye(5);
 
- Cm = eye(5);
 
 m = size(BmCT,2);
 n = size(BmCT,1);
@@ -41,7 +35,7 @@ q = size(Cm,1);
 
 Dm = zeros(q,m);
 %% constraints
-deltaumin = [-Qmax; -Qmax; -100*10000000; -100*10000000];
+deltaumin = [-0.1*Qmax; -0.1*Qmax; -100; -100];
 deltaumax = -deltaumin;
 umin  = zeros(4,1);
 umax  = [Qmax; Qmax; 100; 100];
@@ -55,22 +49,26 @@ Q = [eye(3) zeros(3,2);
         zeros(2,5)];
 Qm = [  eye(3)      zeros(3,2);
         zeros(2,5)                              ];
-R = eye(4);
+% R = eye(4);
+R = [eye(2) zeros(2,2);
+    zeros(2,2) 0.00001*eye(2)];
 
 %% state preparation
-X = zeros(n,ksim);
+Y = zeros(n,ksim);
 Xaug = zeros(n+q,ksim);
 u = zeros(m,ksim);
 
 
-X(:,1) = [0; 0; 0;0.2*Dvalve;0.2*Dvalve];
-Xaug(:,1) = [zeros(n,1);X(1:q,1)];
+Y(:,1) = [0; 0.28; 0;0*Dvalve;0*Dvalve];
+X2 = Y;
+Xaug(:,1) = [zeros(n,1);Y(1:q,1)];
 options_qp =  optimoptions('quadprog','Display','off');
 
-u0 = [0;0;X(4,1)/Dvalve*100;X(5,1)/Dvalve*100];
-
+u0 = [0;0;Y(4,1)/Dvalve*100;Y(5,1)/Dvalve*100];
+Pprev = [15.9081147155710,2.96062907928527e-12,0.000675171321078397,-0.874073498351786,4.34237622311551e-05;2.96062907928527e-12,15.9081147155711,0.000675171327952177,4.34237625058848e-05,-0.874073498351258;0.000675171321078397,0.000675171327952177,155486.683787255,9999.99731184461,9999.99731184459;-0.874073498351786,4.34237625058848e-05,9999.99731184461,643.201217531435,643.148089872505;4.34237622311551e-05,-0.874073498351258,9999.99731184459,643.148089872505,643.201217531434];
 for k = 1:ksim
-    AmCT = dfdx(X(:,k));
+
+    AmCT = freeFallLinearizationA(Y(:,k));
     sysCT = ss(AmCT,BmCT,Cm,Dm);
     sysDT = c2d(sysCT,Ts);
     Am = sysDT.A;
@@ -82,10 +80,16 @@ for k = 1:ksim
     B = [Bm;Cm*Bm];
     C = [zeros(q,n) eye(q)];
 
+%     Lobs = place(A',C',[-0.8 0.8 0.9 -0.9 0.7 -0.7 0.6 -0.6 0.5 -0.5])';
     % integral model
-    [~,P,~] = dlqr(Am,Bm,Qm,R);
-%      P( abs(P) < 1e-9 ) = 0;
-    [ Psi, Omega ] = QRPN2PsiOmega(Q,R,P,N );    
+    if rank(ctrb(Am,Bm)) == 5
+        [~,P,~] = dlqr(Am,Bm,Qm,R);
+    else
+        P = Pprev;
+    end
+    Pprev = P;
+    
+    [ Psi, Omega ] = QRPN2PsiOmega(Q,R,P,N);    
     [Phi, Gamma] = ABCN2FPhi(A,B,C,N);
     G = 2*(Psi+Gamma'*Omega*Gamma);
     F = 2*Gamma'*Omega;
@@ -103,10 +107,9 @@ for k = 1:ksim
         [D,M,E,c] = DMEcIntegral(deltaumin,deltaumax,umin,umax,ymin,ymax,u0,N);
     end
     
-    L = M*Gamma+E;
+    Lmpc = M*Gamma+E;
     W = -D*C-M*Phi;
-    [u_qp,fval,exitflag] = quadprog((G+G')/2,(F*Phi*Xaug(:,k)-F*Rk),L,c+W*(Xaug(:,k)),[],[],[],[],[],options_qp);
-    ustark = -inv(G)*(F*Phi*Xaug(:,k)-F*Rk);
+    [u_qp,fval,exitflag] = quadprog((G+G')/2,(F*Phi*Xaug(:,k)-F*Rk),Lmpc,c+W*(Xaug(:,k)),[],[],[],[],[],options_qp);
     deltaustar0k = [eye(m) zeros(m,m*(N-1))]*u_qp;
     if k > 1
         u(:,k) = u(:,k-1) + deltaustar0k;
@@ -115,30 +118,43 @@ for k = 1:ksim
     end
     
     Xaug(:,k+1) = A*Xaug(:,k) + B*deltaustar0k;
-    X(:,k+1) = Xaug(n+1:end,k+1);
+
+    Y(:,k+1) = C*Xaug(:,k+1);
+    X2(:,k+1) = Am*X2(:,k) + Bm*u(:,k);
+%     Xhat(:,k+1) = Am*Xhat(:,k) + B*deltaustar0k+Lobs*(Y(:,k)) + Lobs*(Y(:,k)-C*Xhat(:,k));
 end
 
 %%
-t = 0:Ts:(size(X,2)-1)*Ts;
+t = 0:Ts:(size(Y,2)-1)*Ts;
 figure(1); clf;
 subplot(2,2,1)
 hold on;
-plot(t,X(1,:));plot(t,X(2,:));plot(t,X(3,:));
-legend('Water level tank 1','Water level tank 2','Water level tank 3');
+plot(t,Y(1,:),'LineWidth',1.5);plot(t,Y(2,:),'LineWidth',1.5);plot(t,Y(3,:),'LineWidth',1.5);
+legend('Tank 1','Tank 2','Tank 3');
 axis([-0.1 t(end) -0.01 0.7])
+xlabel('Time [s]');
+ylabel('Water level [m]');
 subplot(2,2,2);
 hold on;
-plot(t,X(4,:));plot(t,X(5,:));
-legend('Valve diameter 1','Valve diameter 2')
-axis([-0.1 t(end) 0 0.015])
+plot(t,Y(4,:),'LineWidth',1.5);plot(t,Y(5,:),'LineWidth',1.5);
+legend('Valve 1','Valve 2')
+axis([-0.1 t(end) 0 Dvalve*1.05])
+xlabel('Time [s]');
+ylabel('Connecting pipe diameter [m]');
 subplot(2,2,3);
 hold on;
-plot(t(1:end-1),u(1,:));plot(t(1:end-1),u(2,:));
-legend('Pump flow 1','Pump flow 2')
+plot(t(1:end-1),u(1,:),'LineWidth',1.5);plot(t(1:end-1),u(2,:),'LineWidth',1.5);
+legend('Pump 1','Pump 2')
 axis([-0.1 t(end) 0 0.12])
+xlabel('Time [s]');
+ylabel('Pump volume flow input [l/s]');
 subplot(2,2,4);
 hold on;
-plot(t(1:end-1),u(3,:));plot(t(1:end-1),u(4,:));
-legend('valve input 1','valve input 2')
+plot(t(1:end-1),u(3,:),'LineWidth',1.5);plot(t(1:end-1),u(4,:),'LineWidth',1.5);
+legend('Valve 1','Valve 2')
+xlabel('Time [s]');
+ylabel('Valve input [%]');
 axis([-0.1 t(end) -105 105])
+figure
+plot(X2')
  
