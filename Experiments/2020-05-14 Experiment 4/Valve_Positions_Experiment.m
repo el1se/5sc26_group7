@@ -1,7 +1,9 @@
 clc; clear all; close all;
 
 %% Set variables
-Ts = 0.01;
+
+% Sample time
+Ts = 0.01;  
 
 % Without fluid (pumps off)
 T0 = 0:Ts:5;                        % initialize
@@ -18,13 +20,13 @@ T8 = T7(end)+Ts:Ts:T7(end)+15;      % close valves fully
 
 % With fluid (pumps on)
 T9  = T8(end)+Ts:Ts:T8(end)+300;    % wait for fluid to fill
-T10 = T9(end)+Ts:Ts:T9(end)+20;     % open  valves fully
-T11 = T10(end)+Ts:Ts:T10(end)+20;   % close valves fully
+T10 = T9(end)+Ts:Ts:T9(end)+5;      % wait for system to settle down a bit
+T11 = T10(end)+Ts:Ts:T10(end)+20;   % open  valves fully
+T12 = T11(end)+Ts:Ts:T11(end)+20;   % close valves fully
 
 % Time
 t1 = [T0 T1 T2 T3 T4 T5 T6 T7 T8];
-t2 = [T9 T10 T11];
-t  = [t1 t2];
+t  = [t1 T9 T10 T11 T12];
 
 % Valves
 Valve_open = [zeros(1,length(T0))...
@@ -37,8 +39,9 @@ Valve_open = [zeros(1,length(T0))...
               zeros(1,length(T7))...
               zeros(1,length(T8))...
               zeros(1,length(T9))...
-              ones(1,length(T10))...
-              zeros(1,length(T11))];
+              zeros(1,length(T10))...
+              ones(1,length(T11))...
+              zeros(1,length(T12))];
 
 Valve_close = [ones(1,length(T0))...
                zeros(1,length(T1))...
@@ -51,7 +54,8 @@ Valve_close = [ones(1,length(T0))...
                ones(1,length(T8))...
                ones(1,length(T9))...
                zeros(1,length(T10))...
-               ones(1,length(T11))];
+               zeros(1,length(T11))...
+               ones(1,length(T12))];
                
 ValveLD_close = timeseries(Valve_close,t);
 ValveLM_close = timeseries(Valve_close,t);
@@ -67,22 +71,32 @@ ValveRD_open = timeseries(Valve_open,t);
 
 % Pumps
 SetPumps = [zeros(1,length(t1))...
-            ones(1,length(t2))*0.1];
+            ones(1,length(T9))*0.1...
+            zeros(1,length([T10 T11 T12]))];
             
 SetPumpL = timeseries(SetPumps,t);
 SetPumpR = timeseries(SetPumps,t);
 
 %% Check data
+
+% Valves
 figure(1)
 plot(t,Valve_open,t,Valve_close)
 legend('open','close')
 xlabel('t'); ylabel('valve booleans')
 
+% Pumps
+figure(2)
+plot(t,SetPumps)
+xlabel('t'); ylabel('pumps input [L/s]')
+
 %% Save data to .mat file
+
 save('RL_TTS3_Controller_Blank.mat',...
      'SetPumpL','SetPumpR','Ts',...
      'ValveLD_close','ValveLM_close','ValveMD_close',...
      'ValveMR_close','ValveRD_close',...
      'ValveLD_open','ValveLM_open','ValveMD_open',...
      'ValveMR_open','ValveRD_open');
+ 
  
