@@ -43,7 +43,7 @@ subplot(1,2,2); plot(t,cumsum(data1)*0.01/0.0154); title('level'); ylabel('mm');
 
 % total tank height
 trapz(t,data1/0.0154)
-return
+
 %% making inputs for experiment
 t2 = 0:Ts:max(t)*3;
 data2 = [data1 data1(2:end)*0 fliplr(data1(2:end))];
@@ -55,7 +55,7 @@ subplot(1,2,2); plot(t2,cumsum(data2)*0.01/0.0154); title('level'); ylabel('mm')
 % vectors for the valves
 ValveVec = [ones(1,size(t,2)) zeros(1,size(t,2)-1) ones(1,size(t,2)-1)];
 Valves_Vector = ValveVec==0; % 1 means open
-
+return
 SetPump_vector = timeseries(data1,t);
 SetValves_vector = timeseries(Valves_Vector(1:32001),t);
 
