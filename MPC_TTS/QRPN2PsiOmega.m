@@ -1,7 +1,4 @@
 function [ Psi, Omega ] = QRPN2PsiOmega( Q,R,P,N )
-%QPN2PSIOMEGA Summary of this function goes here
-%   Detailed explanation goes here
-
 % Omega
 if (N==1)
     Omega=P;
@@ -12,7 +9,7 @@ else
     end
     Omega=blkdiag(Omega,P);
 %     omega=blkdiag(omega,Q);
-end
+enda
 
 % Psi
 Psi = R;
