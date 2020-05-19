@@ -74,6 +74,32 @@ save('RL_TTS3_Controller_Blank.mat','SetPump_vector','Ts','SetValves_vector')
 zip('ToRemoteLabs4',{'RL_TTS3_Controller_Blank.mat','RL_TTS3_Controller_Blank.slx'});
 kB=dir('ToRemoteLabs4.zip').bytes/1000
 
-return
+
+
+%% FRF EXPERIMENT PREPERATION
+% maximum input rate was observed to be 0.3 L/s2 based on 1 point
+% Range = [0 0.1];
+% N = 180000;
+% input5 = idinput([N,1,1],'rbs',[],Range);
+load('InputFRF.mat')
+input5 = input5';
+integral_input5 = cumsum(input5)*0.01/0.0154;
+plot(cumsum(input5)*0.01/0.0154,'linewidth',1)
+input5new = [input5(1:15400) zeros(1,15000) input5(15400+1:30800) zeros(1,15000)...
+    input5(30800+1:46200) zeros(1,15000) input5(46200+1:61600) zeros(1,15000)...
+     input5(61600+1:77000) zeros(1,15000)  input5(77000+1:92400)];
+input5= input5new;
+SetValves_vector  = boolean([zeros(1,15400) ones(1,150/Ts) zeros(1,15400) ones(1,150/Ts) zeros(1,15400) ones(1,150/Ts) zeros(1,15400) ones(1,150/Ts) zeros(1,15400) ones(1,150/Ts) zeros(1,15400)]);
+t5 = 0:0.01:size(input5,2)*0.01-0.01;
+Ts= 0.01; % sampling frequency.
+SetValves_vector = timeseries(SetValves_vector,t5);
+SetPump_vector = timeseries(input5,t5);
+
+fprintf('duration is %f seconds, %f minutes', max(t5), max(t5)/60);
+delete('ToRemoteLabs5.zip')
+delete('RL_TTS3_Controller_Blank.mat')
+save('RL_TTS3_Controller_Blank.mat','SetPump_vector','Ts','SetValves_vector')
+zip('ToRemoteLabs5',{'RL_TTS3_Controller_Blank.mat','RL_TTS3_Controller_Blank.slx'});
+kB=dir('ToRemoteLabs5.zip').bytes/1000
 
 

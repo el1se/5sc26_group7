@@ -10,8 +10,7 @@ names{1,6} = 'x2LeakPos';
 names{1,7} = 'x3x2ValvePos';
 names{1,8} = 'x3LeakPos';
 mdfData.Properties.VariableNames = names;
-% save('2080_results.mat','mdfData')
-
+clear names
 %% plotting part1
 % reference
 Ts= 0.01; % sampling time

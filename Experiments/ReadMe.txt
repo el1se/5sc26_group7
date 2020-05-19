@@ -8,7 +8,7 @@ Experiment 2:
 
 Experiment 3:
 [Bart]
-* valve 
+* found out that pumps are different, but would like to have more data for pumps
 
 Experiment 4:
 [Elise] Valve positions experiment
