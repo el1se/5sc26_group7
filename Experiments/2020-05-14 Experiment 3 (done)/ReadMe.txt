@@ -1,1 +1,0 @@
-This experiment is to figure out pump characteristics

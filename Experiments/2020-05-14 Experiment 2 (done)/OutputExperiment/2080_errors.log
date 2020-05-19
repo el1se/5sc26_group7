@@ -1,3 +1,0 @@
-2020-05-14T07:09:18.731496Z : WARNING : HOSTPC : 8 : <Fetch>: The method can be called in the <eRUNNING, eACTIVATED, eFINISHED> state only. Vendor Description: <Fetch>: The method can be called in the <eRUNNING, eACTIVATED, eFINISHED> state only. Vendor Description: <Fetch>: The method can be called in the <eRUNNING, eACTIVATED, eFINISHED> state only.
-		   at dSPACE.XIL.Testbench.MAPort.Client.Helpers.Channel`1.Use[TResult](Func`2 codeBlock)
-		   at dSPACE.XIL.Testbench.MAPort.Client.Testbench.Common.Capturing.Capture.Fetch(Boolean whenFinished)
