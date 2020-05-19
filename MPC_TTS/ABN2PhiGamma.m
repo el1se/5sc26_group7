@@ -1,7 +1,4 @@
 function [ Phi, Gamma ] = ABN2PhiGamma(A,B,N)
-%ABN2PhiGamma Summary of this function goes here
-%   Detailed explanation goes here
-
 nx = size(B,1);
 nu = size(B,2);
 

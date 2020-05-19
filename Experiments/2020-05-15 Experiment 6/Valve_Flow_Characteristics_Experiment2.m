@@ -16,7 +16,7 @@ Ts = 0.01;
 
 % Time intervals
 T0 = 0:Ts:5;                        % initialize
-T1 = T0(end)+Ts:Ts:T0(end)+90;      % fill tank 2
+T1 = T0(end)+Ts:Ts:T0(end)+100;     % fill tank 2
 T2 = T1(end)+Ts:Ts:T1(end)+120;     % open valve 3-2 (MR)
 
 % Time
