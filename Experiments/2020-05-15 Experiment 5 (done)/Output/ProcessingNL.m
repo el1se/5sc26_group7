@@ -1,8 +1,7 @@
-clearvars;
-close all;
-clc;
-load('ToRemoteLabs4_results.mat');
+clearvars; close all; clc;
 %% load input and reference 
+load('ToRemoteLabs4_results.mat');
+
 %input and reference
 f = 1/8; % frequency
 mag = 0.02:0.02:0.1; % nr of different amplitudes
