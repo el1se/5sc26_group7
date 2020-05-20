@@ -19,6 +19,7 @@ so now different input signal and way more data will be generated.
 An FRF will be attempted too.
 * ToRemoteLabs1-4 are specific input trajetories with stairs
 * ToRemoteLabs4 was uploaded and tested, rest is smaller and not tested
+* Toremotelabs5 is the input FRF data experiment
 
 Experiment 6:
 [Elise] Valve flow characteristics experiment
