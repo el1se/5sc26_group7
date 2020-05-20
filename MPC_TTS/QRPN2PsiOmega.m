@@ -9,7 +9,7 @@ else
     end
     Omega=blkdiag(Omega,P);
 %     omega=blkdiag(omega,Q);
-enda
+end
 
 % Psi
 Psi = R;
