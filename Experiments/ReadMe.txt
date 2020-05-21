@@ -23,3 +23,6 @@ An FRF will be attempted too.
 
 Experiment 6:
 [Elise] Valve flow characteristics experiment
+
+Experiment 7:
+[Max] Try to get function block to work since for the MPC is was not working

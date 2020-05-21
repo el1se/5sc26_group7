@@ -1,2 +1,6 @@
 
 *.asv
+
+MPC_TTS/fcnBlockSimulink/slprj/
+
+*.autosave
