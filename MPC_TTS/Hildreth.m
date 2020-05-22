@@ -8,6 +8,7 @@ H = M*invE*M';
 K = gamma + M*invE*F;
 
 ni = size(H,1);
+disp(ni);
 
 w = zeros(ni,1);
 lambda_v = zeros(ni,maxiter);
