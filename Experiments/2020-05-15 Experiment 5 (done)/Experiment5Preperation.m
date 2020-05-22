@@ -22,6 +22,8 @@ t1 = 0:Ts:(factor*periods*size(mag,2)/f);
 fprintf('duration is %f seconds', max(t1));
 x1andx3 = trapz(t1,input1/0.0154)
 
+return
+
 SetValves_vector1  = boolean([zeros(1,size(input1,2))]);
 SetPump_vector = timeseries(input1,t1);
 SetValves_vector = timeseries(SetValves_vector1,t1);
@@ -74,7 +76,51 @@ save('RL_TTS3_Controller_Blank.mat','SetPump_vector','Ts','SetValves_vector')
 zip('ToRemoteLabs4',{'RL_TTS3_Controller_Blank.mat','RL_TTS3_Controller_Blank.slx'});
 kB=dir('ToRemoteLabs4.zip').bytes/1000
 
-% save('Output/input.mat','input1','input2','input3','input4','SetValves_vector1','SetValves_vector2','SetValves_vector3','SetValves_vector4','t1','t2','t3','t4','t5','SetValves_vector5','input5')
+
+%% generate input for new experiemnt with finer resolution
+f = 1/8; % frequency
+mag = 0.01:0.01:0.1; % nr of different amplitudes
+periods = 3; % nr of periods each magnitude occurs
+factor = 1.5; % each period appears 1.5 times
+Ts= 0.01; % sampling frequency.
+UnitBlock = [zeros(1,1/(f*Ts)) ones(1,1/(f*2*Ts))];
+
+% making input signal
+n = periods*size(mag,2);
+input1 = zeros(1,n*size(UnitBlock,2)+1);
+for i = 1:size(mag,2)
+    MagUnit = repmat(UnitBlock,1,periods)*mag(i);
+    N = size(MagUnit,2);
+    input1(1,N*(i-1)+2:N*i+1) = MagUnit;
+end
+t1 = 0:Ts:(factor*periods*size(mag,2)/f);
+fprintf('duration is %f seconds', max(t1));
+x1andx3 = trapz(t1,input1/0.0154)
+
+input6 = [input1 zeros(1,150/Ts) fliplr(input1(2:end)) zeros(1,150/Ts) (input1(2:end)) zeros(1,150/Ts) fliplr(input1(2:end)) zeros(1,150/Ts) (input1(2:end)) zeros(1,150/Ts) fliplr(input1(2:end))];
+t6 = 0:Ts:(size(input6,2)-1)*Ts;
+fprintf('duration is %f seconds, %f minutes', max(t6), max(t6)/60);
+SetValves_vector6  = boolean([zeros(1,size(input1,2)) ones(1,150/Ts) zeros(1,size(input1,2)-1) ones(1,150/Ts) zeros(1,size(input1,2)-1) ones(1,150/Ts) zeros(1,size(input1,2)-1) ones(1,150/Ts) zeros(1,size(input1,2)-1) ones(1,150/Ts) zeros(1,size(input1,2)-1)]);
+SetPump_vector = timeseries(input6,t6);
+SetValves_vector = timeseries(SetValves_vector6,t6);
+
+% delete('ToRemoteLabs6.zip')
+% delete('RL_TTS3_Controller_Blank.mat')
+% save('RL_TTS3_Controller_Blank.mat','SetPump_vector','Ts','SetValves_vector')
+% zip('ToRemoteLabs6',{'RL_TTS3_Controller_Blank.mat','RL_TTS3_Controller_Blank.slx'});
+% kB=dir('ToRemoteLabs6.zip').bytes/1000
+
+save('Output/input.mat','input1','input2','input3','input4','SetValves_vector1',...
+    'SetValves_vector2','SetValves_vector3','SetValves_vector4','t1','t2','t3','t4',...
+    't5','SetValves_vector5','input5','t6','SetValves_vector6','input6')
+% 
+
+
+
+
+
+
+
 return
 %% FRF EXPERIMENT PREPERATION
 % maximum input rate was observed to be 0.3 L/s2 based on 1 point

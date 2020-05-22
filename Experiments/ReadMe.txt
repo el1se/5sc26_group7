@@ -20,6 +20,7 @@ An FRF will be attempted too.
 * ToRemoteLabs1-4 are specific input trajetories with stairs
 * ToRemoteLabs4 was uploaded and tested, rest is smaller and not tested
 * Toremotelabs5 is the input FRF data experiment
+* Tomremotelabs6 is the same as toremoetalbs5 but with more magnitudes for hopefully better esitmations
 
 Experiment 6:
 [Elise] Valve flow characteristics experiment

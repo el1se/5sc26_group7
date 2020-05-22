@@ -1,142 +1,199 @@
 clearvars; close all; clc;
-%% load input and reference 
+%% load input and reference and plot those
 load('ToRemoteLabs4_results.mat');
+load('input.mat');
+Ts = 0.01;
 
-%input and reference
-f = 1/8; % frequency
-mag = 0.02:0.02:0.1; % nr of different amplitudes
-periods = 6; % nr of periods each magnitude occurs
-factor = 1.5; % each period appears 1.5 times
-Ts= 0.01; % sampling frequency.
-UnitBlock = [zeros(1,1/(f*Ts)) ones(1,1/(f*2*Ts))];
-
-% making input signal
-n = periods*size(mag,2);
-input1 = zeros(1,n*size(UnitBlock,2)+1);
-for i = 1:size(mag,2)
-    MagUnit = repmat(UnitBlock,1,periods)*mag(i);
-    N = size(MagUnit,2);
-    input1(1,N*(i-1)+2:N*i+1) = MagUnit;
+% experiment:
+ex_x1 = double(Data4.x1_mm);
+ex_x2 = double(Data4.x2_mm);
+ex_t = seconds(Data4.Time);% time
+% simulation
+sim_t = t4;
+sim_x1 = cumsum(input4*0.01/0.0154);
+for i = 2:length(input4)
+    if(~SetValves_vector4(i-1) && (SetValves_vector4(i)))
+        sim_x1(i:end)=sim_x1(i:end)-sim_x1(i);
+    end
 end
-
-input4 = [input1 zeros(1,150/Ts) fliplr(input1(2:end)) zeros(1,150/Ts)...
-    (input1(2:end)) zeros(1,150/Ts) fliplr(input1(2:end)) zeros(1,150/Ts)...
-    (input1(2:end)) zeros(1,150/Ts) fliplr(input1(2:end))];
-Valves_vector  = boolean([zeros(1,size(input1,2)) ones(1,150/Ts)...
-    zeros(1,size(input1,2)-1) ones(1,150/Ts) zeros(1,size(input1,2)-1)...
-    ones(1,150/Ts) zeros(1,size(input1,2)-1) ones(1,150/Ts)...
-    zeros(1,size(input1,2)-1) ones(1,150/Ts) zeros(1,size(input1,2)-1)]);
-
-t4 = 0:Ts:(size(input4,2)-1)*Ts;
-reference = cumsum(input4*0.01/0.0154); % factor 100 because x1 in cm
-for i = 2:length(Valves_vector)
-   if(~Valves_vector(i-1) && (Valves_vector(i)))
-       reference(i:end)=reference(i:end)-reference(i);
-   end
-end
-
-
-
-
-%% plot refernce and input and result
-%result
-t = seconds(mdfData.Time);
-x1 = double(mdfData.x1_mm);
-figure()
-plot(t,x1)
+sim_x2 = sim_x1;
+% plots
+figure(1)
 hold on
-plot(t4, reference)
+plot(ex_t,ex_x1);
+plot(ex_t,ex_x2);
+plot(sim_t,sim_x1);
+plot(sim_t,sim_x2);
+grid on
+legend('x1','x2','x1_{ref}','x2_{ref}')
 
-%% get first section of interest
-N         = size(input1,2);
-sec_t     = 0:Ts:(length(input1)-1)*Ts;
-sec_u     = input1;
-sec_x1    = double(mdfData.x1_mm(1:length(input1)))';
-sec_ref   = reference(1:length(input1));
+% now the data will be cut into sections and a correct offset will be added
+% for training and validation
+N_sec = 36000; % length of each section
+sim_x1 = sim_x1(~SetValves_vector4(2:end));
+sim_x1_train = sim_x1(1:length(sim_x1)*2/3);
+sim_x1_val = sim_x1(length(sim_x1)*2/3+1:end);
+sim_x2_train = sim_x1_train; sim_x2_val = sim_x1_val;
+% make the experiment and simulation of the same length
+ex_x1 = ex_x1(~[1 SetValves_vector4(2:end) ones(1,length(ex_x1)-length(SetValves_vector4))]);
+ex_x2 = ex_x2(~[1 SetValves_vector4(2:end) ones(1,length(ex_x2)-length(SetValves_vector4))]);
+% offset the data to 0
+ex_x2(1*N_sec+1:2*N_sec) = ex_x2(1*N_sec+1:2*N_sec)-ex_x2(1*N_sec+1);
+ex_x2(2*N_sec+1:3*N_sec) = ex_x2(2*N_sec+1:3*N_sec)-ex_x2(2*N_sec+1);
+ex_x2(3*N_sec+1:4*N_sec) = ex_x2(3*N_sec+1:4*N_sec)-ex_x2(3*N_sec+1);
+ex_x2(4*N_sec+1:5*N_sec) = ex_x2(4*N_sec+1:5*N_sec)-ex_x2(4*N_sec+1);
+ex_x2(5*N_sec+1:6*N_sec) = ex_x2(5*N_sec+1:6*N_sec)-ex_x2(5*N_sec+1);
+ex_x1_train = ex_x1(1:length(ex_x1)*2/3)';
+ex_x1_val = ex_x1(length(ex_x1)*2/3+1:end)';
+ex_x2_train = ex_x2(1:length(ex_x2)*2/3)';
+ex_x2_val = ex_x2(length(ex_x2)*2/3+1:end)';
 
-% calculate estimated delay
-delayed_refsec = zeros(1,N);
-t_delay = sqrt(2*0.001.*(620-sec_ref)/9.81);
-
+input = input4(~SetValves_vector4(2:end));
+input_val = input(length(input)*2/3+1:end);
+input_train = input(1:length(input)*2/3);
+t_train = Ts:Ts:length(input_train)*Ts;
+t_val = Ts:Ts:length(input_val)*Ts;
 
 figure()
-plot(t_delay)
-ylabel('max delay time [s]')
-text(1e4,0.28,'delay is likely to be shorter due to inital velocity>0')
+hold on
+plot(Ts:Ts:length(sim_x1)*Ts,sim_x1)
+hold on
+plot(Ts:Ts:length(ex_x1)*Ts,ex_x1)
+hold on
+plot(Ts:Ts:length(ex_x1)*Ts,input*1000)
+legend('simx1','experimentx1','input*1000')
+% looks like a 1 second delay everywhere
 
+%% model identification and validation for entire training set
+c_x1_InitGues = [1 1 1 1 1 1];
+c_x2_InitGues = [1 1 1 1 1 1];
+
+% x1
+options = optimoptions('fmincon','Display','off');
+fun = @(c) CostFunction(t_train,input_train,ex_x1_train,c);
+c_x1_optimum = fmincon(fun,c_x1_InitGues,[],[],[],[],[],[],[],options);
+
+% plot training to see if makes sense correct;
+N = (size(input_train,2))/20;
+C = [repelem(c_x1_optimum(2:6),1,N) fliplr(repelem(c_x1_optimum(2:6),1,N)) repelem(c_x1_optimum(2:6),1,N) fliplr(repelem(c_x1_optimum(2:6),1,N))];
+fitted_train_input = input_train.*C;
+fitted_train_tx1 = t_train+C(1);
+N = (size(input_train,2))/4;
+fitted_train_x1 = [cumsum(fitted_train_input(1:N)) cumsum(fitted_train_input(N+1:N*2))...
+    cumsum(fitted_train_input(1+N*2:N*3)) cumsum(fitted_train_input(N*3+1:4*N))]*0.01/0.0154;
+
+% now test on valication set
+C=C(1:length(ex_x1_val));
+fitted_val_input = input_val.*C;
+N = (size(fitted_val_input,2))/2;
+fitted_val_x1 = [cumsum(fitted_val_input(1:N)) cumsum(fitted_val_input(N+1:N*2))]*0.01/0.0154;
+fitted_val_tx1 = t_val+C(1);
+
+%x2
+fun = @(c) CostFunction(t_train,input_train,ex_x2_train,c);
+c_x2_optimum = fmincon(fun,c_x2_InitGues,[],[],[],[],[],[],[],options);
+
+% plot training to see if makes sense correct;
+N = (size(input_train,2))/20;
+C = [repelem(c_x2_optimum(2:6),1,N) fliplr(repelem(c_x2_optimum(2:6),1,N)) repelem(c_x2_optimum(2:6),1,N) fliplr(repelem(c_x2_optimum(2:6),1,N))];
+fitted_train_input = input_train.*C;
+fitted_train_tx2 = t_train+C(1);
+N = (size(input_train,2))/4;
+fitted_train_x2 = [cumsum(fitted_train_input(1:N)) cumsum(fitted_train_input(N+1:N*2))...
+    cumsum(fitted_train_input(1+N*2:N*3)) cumsum(fitted_train_input(N*3+1:4*N))]*0.01/0.0154;
+
+% now test on valication set
+C=C(1:length(ex_x2_val));
+fitted_val_input = input_val.*C;
+N = (size(fitted_val_input,2))/2;
+fitted_val_x2 = [cumsum(fitted_val_input(1:N)) cumsum(fitted_val_input(N+1:N*2))]*0.01/0.0154;
+fitted_val_tx2 = t_val+C(1);
+
+%% plot results
 figure()
-% plot(sec_t,sec_x1)
-% hold on
-plot(sec_t,sec_ref-sec_x1)
+subplot(2,3,[1 2])
+hold on
+plot(t_train,ex_x1_train)
+plot(fitted_train_tx1,fitted_train_x1)
+plot(t_train,sim_x1_train)
+legend('expeirment','fitted','unfitted')
+title('pump1-x1 training'); ylabel('height [mm]');xlabel('time [s]')
+grid on
+subplot(2,3,3)
+hold on
+plot(t_val,ex_x1_val)
+plot(fitted_val_tx1,fitted_val_x1)
+plot(t_val,sim_x1_val)
+legend('expeirment','fitted','unfitted')
+title('pump1-x1 validation'); ylabel('height [mm]');xlabel('time [s]')
+grid on
+subplot(2,3,[4 5])
+hold on
+plot(t_train,ex_x2_train)
+plot(fitted_train_tx2,fitted_train_x2)
+plot(t_train,sim_x2_train)
+legend('expeirment','fitted','unfitted')
+title('pump1-x2 training'); ylabel('height [mm]');xlabel('time [s]')
+grid on
+subplot(2,3,6)
+hold on
+plot(t_val,ex_x2_val)
+plot(fitted_val_tx2,fitted_val_x2)
+plot(t_val,sim_x2_val)
+legend('expeirment','fitted','unfitted')
+title('pump1-x2 validation'); ylabel('height [mm]');xlabel('time [s]')
+grid on
 
-% close all
-
-%% calculation of optimal values
-
-c_InitGues = [0 1 1 1 1 1];
-fun = @(t0) CostFunction(sec_t,sec_u,sec_x1,t0);
-optimalSol = fmincon(fun,c_InitGues,[],[]);
-
-t_fitted = sec_t+optimalSol(1);
-N = (size(sec_u,2)-1)/5;
-sec_u(2:N+1) = sec_u(2:N+1)*optimalSol(2);
-sec_u(N*1+2:N*2+1) = sec_u(N*1+2:N*2+1)*optimalSol(3);
-sec_u(N*2+2:N*3+1) = sec_u(N*2+2:N*3+1)*optimalSol(4);
-sec_u(N*3+2:N*4+1) = sec_u(N*3+2:N*4+1)*optimalSol(5);
-sec_u(N*4+2:N*5+1) = sec_u(N*4+2:N*5+1)*optimalSol(6);
-ref_fitted = cumsum(sec_u*0.01/0.0154);
+%% generate function based on fit
 figure()
+u_values = 0.02:0.02:0.1;
 subplot(1,2,1)
-plot(t_fitted,ref_fitted)
+plot(u_values,c_x1_optimum(2:6))
 hold on
-plot(sec_t,sec_x1)
-
-%% validation
-
-secval_u = fliplr(input1(2:end));
-secval_t = Ts:Ts:size(secval_u,2)*Ts;
-secval_x1 = double(mdfData.x1_mm(36001+1+15000:72001+15000))';
-
-valt_fitted = secval_t+optimalSol(1);
-N = (size(secval_u,2))/5;
-secval_u(1:N) = secval_u(1:N)*optimalSol(6);
-secval_u(N*1+1:N*2) = secval_u(N*1+1:N*2)*optimalSol(5);
-secval_u(N*2+1:N*3) = secval_u(N*2+1:N*3)*optimalSol(4);
-secval_u(N*3+1:N*4) = secval_u(N*3+1:N*4)*optimalSol(3);
-secval_u(N*4+1:N*5) = secval_u(N*4+1:N*5)*optimalSol(2);
-refval_fitted = cumsum(secval_u*0.01/0.0154);
-% figure()
+p = polyfit(0.02:0.02:0.1,c_x1_optimum(2:6),3);
+u_values = 0:0.001:0.1;
+yfit = polyval(p,u_values);
+plot(u_values,yfit)
+title('pump 1 fit')
 subplot(1,2,2)
-plot(valt_fitted,refval_fitted)
+u_values = 0.02:0.02:0.1;
+plot(u_values,c_x2_optimum(2:6))
 hold on
-plot(secval_t,secval_x1)
-%% cost fun
-function [V] = CostFunction(sec_t,sec_u,sec_x1,c)
-N = (size(sec_u,2)-1)/5;
+p = polyfit(0.02:0.02:0.1,c_x2_optimum(2:6),3);
+u_values = 0:0.001:0.1;
+yfit = polyval(p,u_values);
+plot(u_values,yfit)
+title('pump 2 fit')
+
+
+
+
+%% functions
+function [V] = CostFunction(t,u,x1,c)
+N = (size(u,2))/20;
+
 % optimize input
-sec_u(2:N+1) = sec_u(2:N+1)*c(2);
-sec_u(N*1+2:N*2+1) = sec_u(N*1+2:N*2+1)*c(3);
-sec_u(N*2+2:N*3+1) = sec_u(N*2+2:N*3+1)*c(4);
-sec_u(N*3+2:N*4+1) = sec_u(N*3+2:N*4+1)*c(5);
-sec_u(N*4+2:N*5+1) = sec_u(N*4+2:N*5+1)*c(6);
+% C = repelem(repelem(c(2:6),1,N),1,4);
+C = [repelem(c(2:6),1,N) fliplr(repelem(c(2:6),1,N)) repelem(c(2:6),1,N) fliplr(repelem(c(2:6),1,N))];
+u = u.*C;
+% figure()
+% plot(C)
+% offset with a delay time
+t_fitted = t+c(1);
+N = (size(u,2))/4;
 
+%make fit without time adjustment
+x1_fitted = [cumsum(u(1:N)) cumsum(u(N+1:N*2)) cumsum(u(1+N*2:N*3)) cumsum(u(N*3+1:4*N))]*0.01/0.0154;
 
-t_fitted = sec_t+c(1);
-ref_fitted = cumsum(sec_u*0.01/0.0154);
-ref_fitted = interp1(t_fitted,ref_fitted,sec_t);
-ref_fitted(isnan(ref_fitted))=0;
-any(isnan(ref_fitted))
-V = norm(ref_fitted-sec_x1,2)
+% interpolate between new timeoffset to put in cost function
+x1_fitted = interp1(t_fitted,x1_fitted,t);
+% the beginnin contains NaN. replace those with zeros
+x1_fitted(isnan(x1_fitted))=0;
+
+% any(isnan(ref_fitted))
+
+V = norm(x1_fitted-x1,2);
 end
-
-
-
-
-
-
-
-
-
 
 
 
