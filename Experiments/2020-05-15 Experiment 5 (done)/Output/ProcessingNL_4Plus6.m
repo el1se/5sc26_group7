@@ -462,7 +462,7 @@ title('experiment 6 pump 2 fit')
 figure(8)
 u_values = 0.01:0.01:0.1;
 subplot(1,2,1)
-plot(u_values,c46_x1_optimum(2:11))
+plot(u_values,c46_x1_optimum(2:11),'+')
 hold on
 p = polyfit(u_values,c46_x1_optimum(2:11),2);
 u_values = 0:0.001:0.1;
@@ -474,9 +474,11 @@ u_values = 0:0.001:0.1;
 Y = net(u_values);
 plot(u_values,Y)
 title('experiment 46 pump 1 fit')
+legend('fit fmincon','fitted 2nd poly','fitted GP')
+xlabel('u [l/s]'); ylabel('correction factor c')
 subplot(1,2,2)
 u_values = 0.01:0.01:0.1;
-plot(u_values,c46_x2_optimum(2:11))
+plot(u_values,c46_x2_optimum(2:11),'+')
 hold on
 p = polyfit(u_values,c46_x2_optimum(2:11),2);
 u_values = 0:0.001:0.1;
@@ -488,6 +490,8 @@ net = newrb(u_values,c46_x2_optimum(2:11),1,4);
 u_values = 0:0.001:0.1;
 Y = net(u_values);
 plot(u_values,Y)
+legend('fit fmincon','fitted 2nd poly','fitted GP')
+xlabel('u [l/s]'); ylabel('correction factor c')
 
 % add the new found stuff to existing graphs
 figure(5)
@@ -532,6 +536,58 @@ fittedfit46_val_x2 = [cumsum(fittedfit46_val_input_x2(1:N)) cumsum(fittedfit46_v
     cumsum(fittedfit46_val_input_x2(N*2+1:N*3)) cumsum(fittedfit46_val_input_x2(N*3+1:N*4))]*0.01/0.0154;
 plot(t46_val,fittedfit46_val_x2)
 legend('expeirment','fitted','unfitted','fitted fit')
+
+%% figures for report and SSA
+% training pump 1
+figure(9)
+set(gca,'LooseInset',get(gca,'TightInset'));
+hold on
+plot(t46_train,ex46_x1_train)
+plot(t46_train,sim46_x1_train)
+plot(fitted46_train_tx1,fitted46_train_x1)
+plot(t46_train,fittedfit46_train_x1)
+ylabel('x_1 [mm]');xlabel('time [s]')
+legend('expirement','theoretic','fitted','fitted polynomial')
+grid on
+
+% validation pump 1
+figure(10)
+set(gca,'LooseInset',get(gca,'TightInset'));
+hold on
+plot(t46_val,ex46_x1_val)
+plot(t46_val,sim46_x1_val)
+plot(fitted46_val_tx1,fitted46_val_x1)
+plot(t46_val,fittedfit46_val_x1)
+ylabel('x_1 [mm]');xlabel('time [s]')
+legend('expirement','theoretic','fitted','fitted polynomial')
+grid on
+
+% training pump 2
+figure(11)
+set(gca,'LooseInset',get(gca,'TightInset'));
+hold on
+plot(t46_train,ex46_x2_train)
+plot(t46_train,sim46_x2_train)
+plot(fitted46_train_tx2,fitted46_train_x2)
+plot(t46_train,fittedfit46_train_x2)
+ylabel('x_2 [mm]');xlabel('time [s]')
+legend('expirement','theoretic','fitted','fitted polynomial')
+grid on
+
+% validation pump 2
+figure(12)
+set(gca,'LooseInset',get(gca,'TightInset'));
+hold on
+plot(t46_val,ex46_x2_val)
+plot(t46_val,sim46_x2_val)
+plot(fitted46_val_tx2,fitted46_val_x2)
+plot(t46_val,fittedfit46_val_x2)
+ylabel('x_2 [mm]');xlabel('time [s]')
+legend('expirement','theoretic','fitted','fitted polynomial')
+grid on
+
+
+
 
 %% functions
 function [V] = CostFunction4(t,u,x1,c)
