@@ -14,3 +14,4 @@ c = [-106.218740175917,14.5693164637851,0.543210017066342];
 ActualOutput = (c(1)*TheoreticInput.*TheoreticInput + c(2)*TheoreticInput + c(3)).*TheoreticInput;
 
 end
+

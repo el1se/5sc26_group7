@@ -11,6 +11,8 @@ c46_x2_optimum = [6.20619791555931e-05,0.918601609759064,0.847702416510482,...
 u_sampled = 0.01:0.01:0.1;
 u1_poly = Pump1Function(u_sampled);
 u2_poly = Pump2Function(u_sampled);
+u1_poly2 = Pump1Function(0.01:0.0001:0.1);
+
 
 
 figure(1)
@@ -30,3 +32,9 @@ ylim([0 0.11])
 ylabel('Q_{actual} [L/s]')
 
 grid on
+plot(0.01:0.0001:0.1,u1_poly2)
+Pump1Function(Pump2FunctionInverse(0))
+%% calculating of the inverse
+
+% pump 1 op max 0.0935 doen
+% pump 2 op max 0.105 doen
