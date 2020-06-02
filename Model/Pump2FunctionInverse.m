@@ -1,6 +1,8 @@
 function [ActualOutput] = Pump2FunctionInverse(TheoreticInput)
 % max input = 0.105
-
+if(TheoreticInput>0.105)
+    return
+end
 
 U=0:0.001:0.1;
 

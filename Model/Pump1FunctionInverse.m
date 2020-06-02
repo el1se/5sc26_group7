@@ -1,5 +1,8 @@
 function [ActualOutput] = Pump1FunctionInverse(TheoreticInput)
 % max = 0.0935
+if(TheoreticInput>0.0935)
+    return
+end
 U=0:0.001:0.1;
 
 % coeficients
