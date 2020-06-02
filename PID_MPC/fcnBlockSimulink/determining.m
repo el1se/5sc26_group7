@@ -8,4 +8,4 @@ Q = [eye(3) zeros(3,2);
 R = [eye(2) zeros(2);
      zeros(2) 0.001*eye(2)];
 [K,~,~] = lqrd(Act,Bct,Q,R,Ts); 
-save('RL_TTS3_Controller_Blank.mat','Ts','K');
+save('RL_TTS3_Controller_Blank.mat','Ts','K','Dvalve');
