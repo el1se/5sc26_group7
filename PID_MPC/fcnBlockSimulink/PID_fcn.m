@@ -1,4 +1,4 @@
-function [A,B]  = PID_fcn(Y)
+function [A,B]  = PID_fcn(Y,val)
 % outputs 4d vector u containing inputs for TTS  (format pump1 pump2 valve LM valve RM)
 % outputs 3x3 matrix P, containing solution to DARE, can be used in
 % next itration
@@ -24,6 +24,8 @@ v5 = 0.5;                 % [s]?
 % Constraints 
 Hmax = 0.61;            % [m]
 Qmax = 0.1;             % [l/s]
+
+tubeSpeed = val;
 
 
 %% model
@@ -51,17 +53,17 @@ function Afcn = freeFallLinearizationA(x)
 tol = 0;
 if ((x(2)-x(3)) <= tol) && ((x(1)-x(3)) > tol)
     Afcn = [   
-        -S*x(4)/Dvalve*g/sqrt(2*g*abs(x(1)-x(3)))/Atank    0    S*x(4)/Dvalve*g/sqrt(2*g*abs(x(1)-x(3)))/Atank     -sign(x(1)-x(3))*S/Dvalve*sqrt(2*g*abs(x(1)-x(3)))/Atank   0;
+        -tubeSpeed*S*x(4)/Dvalve*g/sqrt(2*g*abs(x(1)-x(3)))/Atank    0    tubeSpeed*S*x(4)/Dvalve*g/sqrt(2*g*abs(x(1)-x(3)))/Atank     -tubeSpeed*S/Dvalve*sqrt(2*g*abs(x(1)-x(3)))/Atank   0;
         zeros(1,5);
-        S*x(4)/Dvalve*g/sqrt(2*g*abs(x(1)-x(3)))/Atank     0    -S*x(4)/Dvalve*g/sqrt(2*g*abs(x(1)-x(3)))/Atank    sign(x(1)-x(3))*S/Dvalve*sqrt(2*g*abs(x(1)-x(3)))/Atank    0;
+        tubeSpeed*S*x(4)/Dvalve*g/sqrt(2*g*abs(x(1)-x(3)))/Atank     0    -tubeSpeed*S*x(4)/Dvalve*g/sqrt(2*g*abs(x(1)-x(3)))/Atank    tubeSpeed*S/Dvalve*sqrt(2*g*abs(x(1)-x(3)))/Atank    0;
         0                       0                       0                                   -v4                                     0;
         0                       0                       0                                   0                                       -v5
         ];
 elseif ((x(1)-x(3)) <= tol) && ((x(2)-x(3)) > tol)
     Afcn = [   
         zeros(1,5);
-        0                       -S*x(5)/Dvalve*g/sqrt(2*g*abs(x(2)-x(3)))/Atank    S*x(5)/Dvalve*g/sqrt(2*g*abs(x(2)-x(3)))/Atank     0    -sign(x(2)-x(3))*S/Dvalve*sqrt(2*g*abs(x(2)-x(3)))/Atank;
-        0                       S*x(5)/Dvalve*g/sqrt(2*g*abs(x(2)-x(3)))/Atank     -S*x(5)/Dvalve*g/sqrt(2*g*abs(x(2)-x(3)))/Atank    0    sign(x(2)-x(3))*S/Dvalve*sqrt(2*g*abs(x(2)-x(3)))/Atank;
+        0                       -tubeSpeed*S*x(5)/Dvalve*g/sqrt(2*g*abs(x(2)-x(3)))/Atank    tubeSpeed*S*x(5)/Dvalve*g/sqrt(2*g*abs(x(2)-x(3)))/Atank     0    -tubeSpeed*S/Dvalve*sqrt(2*g*abs(x(2)-x(3)))/Atank;
+        0                       tubeSpeed*S*x(5)/Dvalve*g/sqrt(2*g*abs(x(2)-x(3)))/Atank     -tubeSpeed*S*x(5)/Dvalve*g/sqrt(2*g*abs(x(2)-x(3)))/Atank    0    tubeSpeed*S/Dvalve*sqrt(2*g*abs(x(2)-x(3)))/Atank;
         0                       0                       0                                   -v4                                     0;
         0                       0                       0                                   0                                       -v5
         ];
@@ -73,9 +75,9 @@ elseif ((x(2)-x(3)) <= tol) && ((x(1)-x(3)) <= tol)
         ];
 else
     Afcn = [   
-        -S*x(4)/Dvalve*g/sqrt(2*g*abs(x(1)-x(3)))/Atank     0                                                   sign(x(1)-x(3))*S*x(4)/Dvalve*g/sqrt(2*g*abs(x(1)-x(3)))/Atank                                                      -S/Dvalve*sqrt(2*g*abs(x(1)-x(3)))/Atank   0;
-        0                                                   -S*x(5)/Dvalve*g/sqrt(2*g*abs(x(2)-x(3)))/Atank     sign(x(2)-x(3))*S*x(5)/Dvalve*g/sqrt(2*g*abs(x(2)-x(3)))/Atank                                                      0                                       -S/Dvalve*sqrt(2*g*abs(x(2)-x(3)))/Atank;
-        S*x(4)/Dvalve*g/sqrt(2*g*abs(x(1)-x(3)))/Atank      S*x(5)/Dvalve*g/sqrt(2*g*abs(x(2)-x(3)))/Atank      -sign(x(1)-x(3))*S*x(4)/Dvalve*g/sqrt(2*g*abs(x(1)-x(3)))/Atank-sign(x(2)-x(3))*S*x(5)/Dvalve*g/sqrt(2*g*abs(x(2)-x(3)))/Atank      S/Dvalve*sqrt(2*g*abs(x(1)-x(3)))/Atank    S/Dvalve*sqrt(2*g*abs(x(2)-x(3)))/Atank;
+        -S*tubeSpeed*x(4)/Dvalve*g/sqrt(2*g*abs(x(1)-x(3)))/Atank     0                                                   tubeSpeed*S*x(4)/Dvalve*g/sqrt(2*g*abs(x(1)-x(3)))/Atank                                                      -tubeSpeed*S/Dvalve*sqrt(2*g*abs(x(1)-x(3)))/Atank   0;
+        0                                                   -S*tubeSpeed*x(5)/Dvalve*g/sqrt(2*g*abs(x(2)-x(3)))/Atank     tubeSpeed*S*x(5)/Dvalve*g/sqrt(2*g*abs(x(2)-x(3)))/Atank                                                      0                                       -tubeSpeed*S/Dvalve*sqrt(2*g*abs(x(2)-x(3)))/Atank;
+        S*tubeSpeed*x(4)/Dvalve*g/sqrt(2*g*abs(x(1)-x(3)))/Atank      S*tubeSpeed*x(5)/Dvalve*g/sqrt(2*g*abs(x(2)-x(3)))/Atank      -tubeSpeed*S*x(4)/Dvalve*g/sqrt(2*g*abs(x(1)-x(3)))/Atank-tubeSpeed*S*x(5)/Dvalve*g/sqrt(2*g*abs(x(2)-x(3)))/Atank      tubeSpeed*S/Dvalve*sqrt(2*g*abs(x(1)-x(3)))/Atank    tubeSpeed*S/Dvalve*sqrt(2*g*abs(x(2)-x(3)))/Atank;
         0                       0                       0                                   -v4                                     0;
         0                       0                       0                                   0                                       -v5
         ];
