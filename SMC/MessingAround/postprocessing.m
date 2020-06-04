@@ -2,7 +2,7 @@ close all
 
 % Tank heights referencs vs simulation
 figure(1)
-subplot(2,1,1)
+subplot(3,1,1)
 plot(out.tout,out.References(:,1)*1000)
 hold on
 plot(out.tout,out.References(:,2)*1000)
@@ -16,16 +16,16 @@ grid
 xlabel('Time [s]')
 ylabel('Height [mm]')
 
-%subplot(3,1,2)
-%plot(out.tout,out.error1)
-%hold on
-%plot(out.tout,out.error2)
-%legend('error1','error2')
-%grid
-%xlabel('Time [s]')
-%ylabel('Error [mm]')
+subplot(3,1,2)
+plot(out.tout,out.error1)
+hold on
+plot(out.tout,out.error2)
+legend('error1','error2')
+grid
+xlabel('Time [s]')
+ylabel('Error [mm]')
 
-subplot(2,1,2)
+subplot(3,1,3)
 plot(out.tout,out.pump1)
 hold on
 plot(out.tout,out.pump2)
