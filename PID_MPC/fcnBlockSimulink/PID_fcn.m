@@ -48,7 +48,7 @@ A = freeFallLinearizationA(Y);
 function Afcn = freeFallLinearizationA(x)
 tol = 0;
 f= @(xi,beta) beta * (exp(xi/Dvalve*12))/(exp(xi/Dvalve*12)+1);
-dfdx = @(xi,beta) beta/Dvalve*12*f(xi,beta)/(exp(xi/Dvalve*12)+1);
+dfdx = @(xi,beta) f(xi,beta)/Dvalve*12/(exp(xi/Dvalve*12)+1);
 if ((x(2)-x(3)) <= tol) && ((x(1)-x(3)) > tol)
     Afcn = [   
         -S*f(x(4),bB(1))*g/sqrt(2*g*abs(x(1)-x(3)))/Atank           0      S*f(x(4),bB(1))*g/sqrt(2*g*abs(x(1)-x(3)))/Atank         -dfdx(x(4),bB(1))*S*sqrt(2*g*abs(x(1)-x(3)))/Atank   0;
