@@ -1,6 +1,7 @@
 % clear all; 
 close all; clc;
-load('Trajectory_tunedTubespeed.mat');
+clear X; clear U;
+load('results_diffTraj2.mat');
 t = mdfData.RunTime;
 X(:,1) = mdfData.ModelRoot_controller_controller_ModelRoot_ScopeHeightL_mm__In1;
 X(:,2) = mdfData.ModelRoot_controller_controller_ModelRoot_ScopeHeightR_mm__In1;
@@ -16,8 +17,8 @@ subplot(2,1,1)
 plot(t,X(:,1),'Linewidth',LW+0.2); hold on;
 plot(t,X(:,2),'Linewidth',LW+0.2);
 plot(t,X(:,3),'Linewidth',LW+0.2);
-plot(t,zeros(length(t),1)+305,'r--');
-plot(t,zeros(length(t),1)+295,'r--');
+% plot(t,zeros(length(t),1)+305,'r--');
+% plot(t,zeros(length(t),1)+295,'r--');
 legend('Tank L','Tank R','Tank M');
 xlabel('Time [s]');
 ylabel('Tank heights [mm]')
