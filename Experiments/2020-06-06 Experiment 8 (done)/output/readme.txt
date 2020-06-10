@@ -1,0 +1,1 @@
+so experiment 8.1 went sort of okay but had a lot of the wrong values which where tested due to human(Bart) error
