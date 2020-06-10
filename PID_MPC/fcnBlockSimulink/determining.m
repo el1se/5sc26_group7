@@ -7,8 +7,8 @@ betaBar = [16.1461609250188,15.5165993538781];
 [Act,Bct] = PID_fcn([0.3;0.3;0;0.5*Dvalve;0.5*Dvalve],betaBar);
 Q = [eye(3) zeros(3,2);
         zeros(2,5)];
-R = [0.00005*eye(2) zeros(2); % 0.005
-     zeros(2) 0.00000001*eye(2)]; %0.000001
+R = [0.005*eye(2) zeros(2); % 0.005
+     zeros(2) 0.000000001*eye(2)]; %0.000001
 [K,~,~] = lqrd(Act,Bct,Q,R,Ts); 
 save('RL_TTS3_Controller_Blank.mat','Ts');
 save('nonTunables.mat','K','Dvalve','S','Dvalve');
