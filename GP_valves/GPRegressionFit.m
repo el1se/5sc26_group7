@@ -1,6 +1,8 @@
 %% reset add folder
 clc; clear all; close all
 addpath('Machine_Learning_Basic_Scripts');
+S = 5e-5;               % [m^2]
+Dvalve = sqrt(4*S/pi);     % [m]
 %% training data
 xTraining = [20.8214436313299,40.6830579434519,60.8568621315079,80.8895468214911,100]';
 y(:,1) = [0.41 6.5 14 15 15.2]'; % ydata 1
@@ -54,7 +56,7 @@ for i = 1:2
     k_ss = xres(3)*GPSEKernel(xPrior',xPrior',xres(1)) + R'*inv(H*inv(Ky)*H')*R;
     
     % mu etc
-    mu(:,i) = (Lk') * (L \ y(:,i))+R'*betaBar(:,i);
+    mu(:,i) = ((Lk') * (L \ y(:,i))+R'*betaBar(:,i));
     var(:,i) = (diag(k_ss)' - sum(Lk.^2,1))';
     
 end
