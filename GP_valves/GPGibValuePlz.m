@@ -13,8 +13,8 @@ betaBar = [16.1461609250188,15.5165993538781];
 for i = 1:2
     H = h(xTraining)';
     Hs = h(x(i))';
-    k = GPSEKernel(xTraining,xTraining,xres(1,i));
-    k_s = xres(3,i)*GPSEKernel(xTraining,x(i),xres(1,i));
+    k = GPSEKernelInline(xTraining,xTraining,xres(1,i));
+    k_s = xres(3,i)*GPSEKernelInline(xTraining,x(i),xres(1,i));
     %L and Lk
     Ky = xres(3,i)*k+xres(2,i)*eye(N);
     L = chol(Ky,'lower');
@@ -23,10 +23,19 @@ for i = 1:2
     R = Hs-H*inv(Ky)*k_s;
         
     % kernel of prediction
-    k_ss = xres(3,i)*GPSEKernel(x(i)',x(i)',xres(1,i)) + R'*inv(H*inv(Ky)*H')*R;
+    k_ss = xres(3,i)*GPSEKernelInline(x(i)',x(i)',xres(1,i)) + R'*inv(H*inv(Ky)*H')*R;
     
     % mu etc
     c(i) = (Lk') * (L \ y(:,i))+R'*betaBar(i);
 end
+function val = GPSEKernelInline(a,b,l)
+    %% calculation
+    a = a(:);
+    b = b(:);
+    sqdist = (repmat(a,size(b'))-repmat(b',size(a))).^2;
+    val = exp(-0.5/l*sqdist);
+end
+
+
 end
 
