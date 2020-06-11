@@ -44,41 +44,41 @@ xlabel('Time [s]');
 ylabel('Valve input [%]');
 
 % 
-% figure
-% subplot(1,3,1)
-% plot(t,X(:,1),'Linewidth',LW); hold on;
-% plot(out.tout,out.simout.Data(:,1),'Linewidth',LW);
-% xlabel('Time [s]');
-% ylabel('Tank heights [mm]')
-% subplot(1,3,2)
-% plot(t,X(:,2),'Linewidth',LW); hold on;
-% plot(out.tout,out.simout.Data(:,2),'Linewidth',LW);
-% xlabel('Time [s]');
-% ylabel('Tank heights [mm]')
-% subplot(1,3,3)
-% plot(t,X(:,3),'Linewidth',LW); hold on;
-% plot(out.tout,out.simout.Data(:,3),'Linewidth',LW);
-% xlabel('Time [s]');
-% ylabel('Tank heights [mm]')
-% legend('Real system','Simulation (tubeSpeed=0.0155)')
-% 
-% 
-% figure
-% subplot(1,3,1)
-% plot(t,X(:,1)-out.simout.Data(:,1),'Linewidth',LW); 
-% xlabel('Time [s]');
-% ylabel('Residual between model and system [mm]')
-% subplot(1,3,2)
-% plot(t,X(:,2)-out.simout.Data(:,2),'Linewidth',LW); 
-% xlabel('Time [s]');
-% ylabel('Residual between model and system [mm]')
-% subplot(1,3,3)
-% plot(t,X(:,3)-out.simout.Data(:,3),'Linewidth',LW); 
-% xlabel('Time [s]');
-% ylabel('Residual between model and system [mm]')
-% %%
-% figure
-% plot(t,X(:,1)-out.simout.Data(:,4)*1000); hold on
-% norm(X(:,1)-out.simout.Data(:,4)*1000,2)
-% norm(X(:,2)-out.simout.Data(:,4)*1000,2)
-% norm(X(:,3)-out.simout.Data(:,4)*1000,2)
+figure
+subplot(1,3,1)
+plot(t,X(:,1),'Linewidth',LW); hold on;
+plot(out.tout,out.simout.Data(:,1),'Linewidth',LW);
+xlabel('Time [s]');
+ylabel('Tank heights [mm]')
+subplot(1,3,2)
+plot(t,X(:,2),'Linewidth',LW); hold on;
+plot(out.tout,out.simout.Data(:,2),'Linewidth',LW);
+xlabel('Time [s]');
+ylabel('Tank heights [mm]')
+subplot(1,3,3)
+plot(t,X(:,3),'Linewidth',LW); hold on;
+plot(out.tout,out.simout.Data(:,3),'Linewidth',LW);
+xlabel('Time [s]');
+ylabel('Tank heights [mm]')
+legend('Real system','Simulation (tubeSpeed=0.0155)')
+
+
+figure
+subplot(1,3,1)
+plot(t,X(:,1)-out.simout.Data(:,1),'Linewidth',LW); 
+xlabel('Time [s]');
+ylabel('Residual between model and system [mm]')
+subplot(1,3,2)
+plot(t,X(:,2)-out.simout.Data(:,2),'Linewidth',LW); 
+xlabel('Time [s]');
+ylabel('Residual between model and system [mm]')
+subplot(1,3,3)
+plot(t,X(:,3)-out.simout.Data(:,3),'Linewidth',LW); 
+xlabel('Time [s]');
+ylabel('Residual between model and system [mm]')
+%%
+figure
+plot(t,X(:,1)-out.simout.Data(:,4)*1000); hold on
+norm(X(:,1)-out.simout.Data(:,4)*1000,2)
+norm(X(:,2)-out.simout.Data(:,4)*1000,2)
+norm(X(:,3)-out.simout.Data(:,4)*1000,2)

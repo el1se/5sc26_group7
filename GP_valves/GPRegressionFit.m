@@ -12,7 +12,7 @@ n =250;                                     % number of test points
 N = length(xTraining);                            % number of training points
 xPrior = linspace(0,100,n)';                % test points
 
-h = @(x) exp(x*12/100-6)./(exp(x*12/100-6)+1);
+h = @(x) [ones(length(x),1) x exp(x*12/100-6)./(exp(x*12/100-6)+1)];
 mh = size(h(1),2);
 %% opt vars
 x01 = linspace(1,1000,10);
