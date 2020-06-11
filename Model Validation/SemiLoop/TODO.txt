@@ -1,0 +1,2 @@
+do experiments again and measure connecting valve booleans.
+feed these directly into Valves sub system block.
