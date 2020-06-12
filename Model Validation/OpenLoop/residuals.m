@@ -17,6 +17,16 @@ expHeightL = mdfData.ModelRoot_controller_controller_ModelRoot_ScopeHeightL_mm__
 expHeightM = mdfData.ModelRoot_controller_controller_ModelRoot_ScopeHeightM_mm__In1;
 expHeightR = mdfData.ModelRoot_controller_controller_ModelRoot_ScopeHeightR_mm__In1;
 
+% better valves hack
+dataVL     = mdfData.ModelRoot_controller_controller_ModelRoot_MLValveInput_In1;
+valveMLin  = timeseries(dataVL,time);
+dataVR     = mdfData.ModelRoot_controller_controller_ModelRoot_MRValveInput1_In1;
+valveMRin  = timeseries(dataVR,time);
+dataVL     = mdfData.ModelRoot_controller_controller_ModelRoot_Valves_ScopeValveLM__;
+valveMLpos = timeseries(dataVL,time);
+dataVR     = mdfData.ModelRoot_controller_controller_ModelRoot_Valves_ScopeValveMR__;
+valveMRpos = timeseries(dataVR,time);
+
 tstep = time(2)-time(1);
 tend  = time(end) + tstep;
 out   = sim('RL_TTS3_System_Blank.slx');
@@ -40,6 +50,7 @@ subplot(122)
 plot(simHeightL,resHeightL,'.')
 hold on
 line([0 simHeightL(end)],[0 0])
+ylim([-1.5 1.5])
 xlabel('model height L [mm]')
 ylabel('standardized residuals [mm^{1/2}]')
 
@@ -54,6 +65,7 @@ subplot(122)
 plot(simHeightM,resHeightM,'.')
 hold on
 line([0 simHeightM(end)],[0 0])
+ylim([-1.5 1.5])
 xlabel('model height M [mm]')
 ylabel('standardized residuals [mm^{1/2}]')
 
@@ -68,5 +80,6 @@ subplot(122)
 plot(simHeightR,resHeightR,'.')
 hold on 
 line([0 simHeightR(end)],[0 0])
+ylim([-1.5 1.5])
 xlabel('model height R [mm]')
 ylabel('standardized residuals [mm^{1/2}]')
