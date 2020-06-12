@@ -12,7 +12,8 @@ n =250;                                     % number of test points
 N = length(xTraining);                            % number of training points
 xPrior = linspace(0,100,n)';                % test points
 
-h = @(x) [ones(length(x),1) x exp(x*12/100-6)./(exp(x*12/100-6)+1)];
+% h = @(x) [ones(length(x),1) x exp(x*12/100-6)./(exp(x*12/100-6)+1)];
+h = @(x) [exp(x*12/100-6)./(exp(x*12/100-6)+1)];
 mh = size(h(1),2);
 %% opt vars
 x01 = linspace(1,1000,10);
@@ -63,23 +64,24 @@ end
 mu(mu<0) = 0;
 figure
 subplot(1,2,1)
-inBetween = [(mu(:,1)+3*sqrt(var(:,1)))' fliplr((mu(:,1)-3*sqrt(var(:,1)))')];
-x2 = [xPrior', fliplr(xPrior')];
-fill(x2,inBetween, [7 7 7]/8);hold on;
-plot(xTraining,y(:,1),'s','MarkerSize',12);
-plot(xPrior,mu(:,1),'LineWidth',1.3);
+% inBetween = [(mu(:,1)+3*sqrt(var(:,1)))' fliplr((mu(:,1)-3*sqrt(var(:,1)))')];
+% x2 = [xPrior', fliplr(xPrior')];
+% fill(x2,inBetween, [7 7 7]/8);hold on;
+plot(xTraining,y(:,1),'s','MarkerSize',12); hold on;
+% plot(xPrior,mu(:,1),'LineWidth',1.3);
 plot(xPrior,h(xPrior)*betaBar(:,1),'LineWidth',1.3);
 xlabel('Valve opening percentage [%]');
-ylabel('c');
-legend('$\mu \pm 3\sigma$ for GP+LS','Data valve 1-3','Fit valve 1-3 GP+LS','Fit valve 1-3 LS only','Interpreter','Latex');
+ylabel('$c_{1\rightarrow 3}(x_4)$','Interpreter','Latex');
+% legend('$\mu \pm 3\sigma$ for GP+LS','Data valve 1-3','Fit valve 1-3 GP+LS','Fit valve 1-3 LS only','Interpreter','Latex');
+legend('Data valve 1-3','Least-Squares fit valve 1-3');
 subplot(1,2,2)
-inBetween = [(mu(:,2)+3*sqrt(var(:,2)))' fliplr((mu(:,2)-3*sqrt(var(:,2)))')];
-x2 = [xPrior', fliplr(xPrior')];
-fill(x2,inBetween, [7 7 7]/8);hold on;
-plot(xTraining,y(:,2),'d','MarkerSize',12); 
-plot(xPrior,mu(:,2),'LineWidth',1.3);
+% inBetween = [(mu(:,2)+3*sqrt(var(:,2)))' fliplr((mu(:,2)-3*sqrt(var(:,2)))')];
+% x2 = [xPrior', fliplr(xPrior')];
+% fill(x2,inBetween, [7 7 7]/8);hold on;
+plot(xTraining,y(:,2),'d','MarkerSize',12);  hold on;
+% plot(xPrior,mu(:,2),'LineWidth',1.3);
 plot(xPrior,h(xPrior)*betaBar(:,2),'LineWidth',1.3);
 xlabel('Valve opening percentage [%]');
-ylabel('c');
-legend('$\mu \pm 3\sigma$ for GP+LS','Data valve 2-3','Fit valve 2-3 GP+LS','Fit valve 1-3 LS only','Interpreter','Latex');
-
+ylabel('$c_{2\rightarrow 3}(x_5)$','Interpreter','Latex');
+% legend('$\mu \pm 3\sigma$ for GP+LS','Data valve 2-3','Fit valve 2-3 GP+LS','Fit valve 1-3 LS only','Interpreter','Latex');
+legend('Data valve 2-3','Least-Squares fit valve 2-3');
