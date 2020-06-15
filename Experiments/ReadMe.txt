@@ -28,3 +28,9 @@ Experiment 6:
 Experiment 7:
 [Max] Try to get function block to work since for the MPC is was not working
 result: matlab fcn block works. coder.extrincisc('....') works too. however, the moment when calling the function, for example 'ss', it gives errors
+
+Experiment 8:
+valve identification
+
+Expiermeint 9:
+pump inverse test for karan
