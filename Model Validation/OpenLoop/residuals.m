@@ -28,58 +28,58 @@ dataVR     = mdfData.ModelRoot_controller_controller_ModelRoot_Valves_ScopeValve
 valveMRpos = timeseries(dataVR,time);
 
 tstep = time(2)-time(1);
-tend  = time(end) + tstep;
+tend  = time(end) + tstep; %uncomment for NormalTraj
 out   = sim('RL_TTS3_System_Blank.slx');
 
 simHeightL = out.simHeightL;
 simHeightM = out.simHeightM;
 simHeightR = out.simHeightR;
 
-resHeightL = (expHeightL - simHeightL)./sqrt(simHeightL);
-resHeightM = (expHeightM - simHeightM)./sqrt(simHeightM);
-resHeightR = (expHeightR - simHeightR)./sqrt(simHeightR);
+resHeightL = (expHeightL - simHeightL);%./std(expHeightL - simHeightL);
+resHeightM = (expHeightM - simHeightM);%./std(expHeightM - simHeightM);
+resHeightR = (expHeightR - simHeightR);%./std(expHeightR - simHeightR);
 
 figure(1)
-subplot(121)
+subplot(231)
 plot(simHeightL,expHeightL,'.')
 hold on
 line([0 simHeightL(end)],[0 simHeightL(end)])
 xlabel('model height L [mm]')
 ylabel('experiment height L [mm]')
-subplot(122)
+subplot(234)
 plot(simHeightL,resHeightL,'.')
 hold on
 line([0 simHeightL(end)],[0 0])
-ylim([-1.5 1.5])
+ylim([-15 15])
 xlabel('model height L [mm]')
-ylabel('standardized residuals [mm^{1/2}]')
+ylabel('Residuals [mm]')
 
-figure(2)
-subplot(121)
+%figure(2)
+subplot(232)
 plot(simHeightM,expHeightM,'.')
 hold on
 line([0 simHeightM(end)],[0 simHeightM(end)])
 xlabel('model height M [mm]')
 ylabel('experiment height M [mm]')
-subplot(122)
+subplot(235)
 plot(simHeightM,resHeightM,'.')
 hold on
 line([0 simHeightM(end)],[0 0])
-ylim([-1.5 1.5])
+ylim([-15 15])
 xlabel('model height M [mm]')
-ylabel('standardized residuals [mm^{1/2}]')
+ylabel('Residuals [mm]')
 
-figure(3)
-subplot(121)
+%figure(3)
+subplot(233)
 plot(simHeightR,expHeightR,'.')
 hold on 
 line([0 simHeightR(end)],[0 simHeightR(end)])
 xlabel('model height R [mm]')
 ylabel('experiment height R [mm]')
-subplot(122)
+subplot(236)
 plot(simHeightR,resHeightR,'.')
 hold on 
 line([0 simHeightR(end)],[0 0])
-ylim([-1.5 1.5])
+ylim([-15 15])
 xlabel('model height R [mm]')
-ylabel('standardized residuals [mm^{1/2}]')
+ylabel('Residuals [mm]')
