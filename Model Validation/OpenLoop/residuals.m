@@ -50,7 +50,7 @@ subplot(234)
 plot(simHeightL,resHeightL,'.')
 hold on
 line([0 simHeightL(end)],[0 0])
-ylim([-15 15])
+ylim([-6 6])
 xlabel('model height L [mm]')
 ylabel('Residuals [mm]')
 
@@ -65,7 +65,7 @@ subplot(235)
 plot(simHeightM,resHeightM,'.')
 hold on
 line([0 simHeightM(end)],[0 0])
-ylim([-15 15])
+ylim([-6 6])
 xlabel('model height M [mm]')
 ylabel('Residuals [mm]')
 
@@ -80,6 +80,6 @@ subplot(236)
 plot(simHeightR,resHeightR,'.')
 hold on 
 line([0 simHeightR(end)],[0 0])
-ylim([-15 15])
+ylim([-6 6])
 xlabel('model height R [mm]')
 ylabel('Residuals [mm]')
