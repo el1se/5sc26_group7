@@ -6,10 +6,14 @@ Dvalve = sqrt(4*S/pi);     % [m]
 bB = [16.1461609250188,15.5165993538781]./1000;
 [Atemp,Btemp] =  PID_fcn([0.2;0.2;0.1;0.5*Dvalve;0.5*Dvalve],bB);
 Q = [eye(3) zeros(3,2);
-        zeros(2,5)];
-R = [0.005*eye(2) zeros(2,2); % 0.5
-    zeros(2,2) 0.00001*eye(2)]; % 0.00005
-[~,P,~] = lqrd(Atemp,Btemp,Q,R,Ts2);
+        zeros(2,3) 0*eye(2)];
+R = [0.001*eye(2) zeros(2,2); % For delta input
+    zeros(2,2) 0.00001*eye(2)]; %
+Ru = [0.0001*eye(2) zeros(2,2); % for input (P)
+    zeros(2,2) 0.00001*eye(2)]; 
+
+
+[~,P,~] = lqrd(Atemp,Btemp,Q,Ru,Ts2);
 
 
 save('RL_TTS3_Controller_Blank.mat','Ts');
