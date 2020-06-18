@@ -15,7 +15,6 @@ Ru = [0.0001*eye(2) zeros(2,2); % for input (P)
 
 [~,P,~] = lqrd(Atemp,Btemp,Q,Ru,Ts2);
 
-
 save('RL_TTS3_Controller_Blank.mat','Ts');
 save('nonTunables.mat','Ts2','tubeSpeed','Q','R','P','bB');
 load('RL_busses.mat');
