@@ -7,7 +7,7 @@ bB = [16.1461609250188,15.5165993538781]./1000;
 [Atemp,Btemp] =  PID_fcn([0.2;0.2;0.1;0.5*Dvalve;0.5*Dvalve],bB);
 Q = [1*eye(3) zeros(3,2);
         zeros(2,3) 0*eye(2)];
-R = [1e-3*eye(2) zeros(2,2); % For delta input
+R = [1e-2*eye(2) zeros(2,2); % For delta input
     zeros(2,2) 1e-7*eye(2)]; 
 % Ru = [1e-3/0.1*eye(2) zeros(2,2); % for input (P)
 %     zeros(2,2) 1e-5/100*eye(2)]; 
