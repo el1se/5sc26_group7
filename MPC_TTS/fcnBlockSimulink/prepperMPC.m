@@ -9,8 +9,9 @@ Q = [1*eye(3) zeros(3,2);
         zeros(2,3) 0*eye(2)];
 R = [1e-3/0.1*eye(2) zeros(2,2); % For delta input
     zeros(2,2) 1e-4/100*eye(2)]; 
-Ru = [1e-3/0.1*eye(2) zeros(2,2); % for input (P)
-    zeros(2,2) 1e-5/100*eye(2)]; 
+% Ru = [1e-3/0.1*eye(2) zeros(2,2); % for input (P)
+%     zeros(2,2) 1e-5/100*eye(2)]; 
+Ru = R;
 
 
 [~,P,~] = lqrd(Atemp,Btemp,Q,Ru,Ts2);
