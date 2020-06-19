@@ -35,9 +35,9 @@ simHeightL = out.simHeightL;
 simHeightM = out.simHeightM;
 simHeightR = out.simHeightR;
 
-resHeightL = (expHeightL - simHeightL);%./std(expHeightL - simHeightL);
-resHeightM = (expHeightM - simHeightM);%./std(expHeightM - simHeightM);
-resHeightR = (expHeightR - simHeightR);%./std(expHeightR - simHeightR);
+resHeightL = (expHeightL - simHeightL)./std(expHeightL - simHeightL);
+resHeightM = (expHeightM - simHeightM)./std(expHeightM - simHeightM);
+resHeightR = (expHeightR - simHeightR)./std(expHeightR - simHeightR);
 
 figure(1)
 subplot(231)
