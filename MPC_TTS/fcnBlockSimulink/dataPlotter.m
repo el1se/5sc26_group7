@@ -1,14 +1,14 @@
 % clear all; 
 close all; clc;
 clear X; clear U;
-load('MPC17_06_Ts1_N7.mat');
+load('22_06_8.mat');
 t = mdfData.RunTime;
 X(:,1) = mdfData.ModelRoot_controller_controller_ModelRoot_ScopeHeightL_mm__In1;
 X(:,2) = mdfData.ModelRoot_controller_controller_ModelRoot_ScopeHeightR_mm__In1;
 X(:,3) = mdfData.ModelRoot_controller_controller_ModelRoot_ScopeHeightM_mm__In1;
 X(:,4) = mdfData.ModelRoot_controller_controller_ModelRoot_Valves_ScopeValveLM__;
 X(:,5) = mdfData.ModelRoot_controller_controller_ModelRoot_Valves_ScopeValveMR__;
-U(:,1) = mdfData.ModelRoot_controller_controller_ModelRoot_PumpR1_In1;
+U(:,1) = mdfData.ModelRoot_controller_controller_ModelRoot_PumpL_In1;
 U(:,2) = mdfData.ModelRoot_controller_controller_ModelRoot_PumpR_In1;
 % U(:,3) = mdfData.ModelRoot_controller_controller_ModelRoot_MLValveInput_In1;
 % U(:,4) = mdfData.ModelRoot_controller_controller_ModelRoot_MRValveInput1_In1;
