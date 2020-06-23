@@ -1,5 +1,7 @@
-X = out.simout.Data(:,1:5);
-U = out.simout.Data(:,6:9);
+dat = out.simout.Data;
+X = dat(:,1:5);
+U = dat(:,6:9);
+error = dat(:,10:12)*1000-X(:,1:3);
 t = out.tout;
 LW = 1.3;
 figure
