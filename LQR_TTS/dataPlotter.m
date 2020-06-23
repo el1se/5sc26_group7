@@ -12,7 +12,9 @@ U(:,1) = mdfData.ModelRoot_controller_controller_ModelRoot_PumpL_In1;
 U(:,2) = mdfData.ModelRoot_controller_controller_ModelRoot_PumpR_In1;
 U(:,3) = mdfData.ModelRoot_controller_controller_ModelRoot_MLValveInput_In1;
 U(:,4) = mdfData.ModelRoot_controller_controller_ModelRoot_MRValveInput1_In1;
-
+dat = out.simout.Data;
+L = length(t);
+error = dat(1:L,10:12)*1000-X(:,1:3);
 LW = 1.3;
 figure
 subplot(2,2,1)
