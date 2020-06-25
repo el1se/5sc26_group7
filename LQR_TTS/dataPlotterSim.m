@@ -3,6 +3,7 @@ X = dat(:,1:5);
 U = dat(:,6:9);
 error = dat(:,10:12)*1000-X(:,1:3);
 t = out.tout;
+L = length(t);
 LW = 1.3;
 figure
 subplot(2,2,1)
@@ -32,3 +33,7 @@ plot(t,U(:,4),'Linewidth',LW);
 legend('valve ML','Valve MR')
 xlabel('Time [s]');
 ylabel('Valve Input [%]');
+1/L*norm(error(:,1),2)
+1/L*norm(error(:,2),2)
+1/L*norm(error(:,3),2)
+error(end,:)
