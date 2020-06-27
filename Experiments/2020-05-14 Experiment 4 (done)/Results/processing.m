@@ -19,7 +19,7 @@ names{1,8} = 'RD';
 mdfData.Properties.VariableNames = names;
 
 %% Plot data
-mdfData.Time(mdfData.LD>0)
+mdfData.Time(mdfData.LD>0);
 
 % valve positions
 figure(1)
@@ -33,7 +33,7 @@ legend('LD','LM','MD','MR','RD')
 xlabel('Time [s]')
 ylabel('Valve positions [%]')
 grid
-%xlim([0 450])
+%xlim([5 15])
 
 % input booleans
 subplot(212)
@@ -43,3 +43,4 @@ legend('open','close');
 xlabel('Time [s]')
 ylabel('Valve booleans [-]')
 grid
+%xlim([5 15])
