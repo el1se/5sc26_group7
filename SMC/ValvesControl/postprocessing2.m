@@ -7,8 +7,8 @@ load RL_TTS3_Controller_Blank.mat
 
 Dvalve = 2*sqrt(5e-5/pi);
 
-%Tend = 125
-Tend = 110
+Tend = 125
+%Tend = 110
 
 out = sim('RL_TTS3_TOP_SIM.slx');
 
@@ -34,6 +34,7 @@ pump2 = reshape(out.pump2,[n,1]);
 %% report plots
 
 figure(1)
+set(gcf,'Renderer','Painters')
 subplot(2,2,1)
 plot(out.tout,out.Heights(:,1),'Linewidth',1.3)
 hold on

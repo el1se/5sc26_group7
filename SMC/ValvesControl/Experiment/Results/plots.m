@@ -5,7 +5,14 @@ base = "C:\Users\edtve\Documents\TUe Systems and Control\Integration Project\Cod
 
 % measurement data
 %load(fullfile(base,"same_refs1/5217_results.mat"))
-load(fullfile(base,"different_refs1/5218_results.mat"))
+%load(fullfile(base,"same_refs2/5940_results.mat"))
+%load(fullfile(base,"same_refs3/5942_results.mat"))
+%load(fullfile(base,"same_refs4/5948_results.mat"))
+%load(fullfile(base,"different_refs1/5218_results.mat"))
+load(fullfile(base,"different_refs2/5946_results.mat"))
+%load(fullfile(base,"different_refs3/5950_results.mat"))
+%load(fullfile(base,"different_refs4/5952_results.mat"))
+%load(fullfile(base,"different_refs5/5953_results.mat"))
 
 % reference data
 %load(fullfile(base,"same_refs1/sim_out_references.mat"))
@@ -13,7 +20,7 @@ load(fullfile(base,"different_refs1/sim_out_references.mat"))
 
 % duration
 %Tend = 125;
-Tend = 110;
+Tend = 125;
 L = Tend/0.01;
 
 % get data from measurement file
